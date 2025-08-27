@@ -64,9 +64,9 @@ export default function AuthForm({ mode = 'login' }: AuthFormProps) {
         console.log('Registro bem-sucedido, redirecionando para dashboard...')
         router.push('/dashboard')
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro na autenticação:', error)
-      setError(error.message || 'Erro ao autenticar')
+      setError(error instanceof Error ? error.message : 'Erro ao autenticar')
     } finally {
       setLoading(false)
     }

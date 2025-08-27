@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js'
 import { useSupabase } from '../../lib/supabase-provider'
 import { useRouter } from 'next/navigation'
 
@@ -15,15 +16,15 @@ export default function ResetPasswordForm() {
   const [canReset, setCanReset] = useState(false)
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {
       if (event === 'PASSWORD_RECOVERY') {
         setCanReset(true)
       }
     })
 
     // Tentar recuperar sessão do link (caso necessário)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+    supabase.auth.getSession().then((result: { data: { session: Session | null } }) => {
+      if (result.data.session) {
         setCanReset(true)
       }
     })
@@ -51,8 +52,8 @@ export default function ResetPasswordForm() {
       if (error) throw error
       setMessage('Senha atualizada com sucesso! Redirecionando para login...')
       setTimeout(() => router.push('/login'), 1500)
-    } catch (err: any) {
-      setError(err.message || 'Não foi possível atualizar a senha')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Não foi possível atualizar a senha')
     } finally {
       setLoading(false)
     }

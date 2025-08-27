@@ -3,14 +3,16 @@
 import Link from "next/link";
 import { useAuth } from "../../lib/auth-context";
 import { useRouter } from "next/navigation";
+import type { User } from "@supabase/supabase-js";
 
 export default function Header() {
   const { user, signOut } = useAuth();
   const router = useRouter();
 
-  const getFirstName = (user: any) => {
-    if (user.user_metadata?.full_name) {
-      return user.user_metadata.full_name.split(' ')[0];
+  const getFirstName = (user: User) => {
+    if ((user.user_metadata as Record<string, unknown>)?.['full_name']) {
+      const full = String((user.user_metadata as Record<string, unknown>)['full_name'])
+      return full.split(' ')[0];
     }
     if (user.email) {
       return user.email.split('@')[0];

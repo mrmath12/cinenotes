@@ -23,8 +23,8 @@ export default function ForgotPasswordForm() {
       })
       if (error) throw error
       setMessage('Se o e-mail existir, enviaremos um link para redefinição.')
-    } catch (err: any) {
-      setError(err.message || 'Não foi possível enviar o e-mail de redefinição')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Não foi possível enviar o e-mail de redefinição')
     } finally {
       setLoading(false)
     }

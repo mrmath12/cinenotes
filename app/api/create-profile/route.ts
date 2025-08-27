@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '../../../lib/supabase-server'
 
+export const runtime = 'nodejs'
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
@@ -25,8 +27,9 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true })
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? 'Erro interno' }, { status: 500 })
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Erro interno'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 

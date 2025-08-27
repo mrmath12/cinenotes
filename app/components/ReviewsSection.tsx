@@ -82,7 +82,7 @@ export default function ReviewsSection() {
     setLoading(true)
     
     setTimeout(() => {
-      let filteredReviews = [...mockReviews]
+      const filteredReviews = [...mockReviews]
       
       switch (filter) {
         case 'recentes':
@@ -102,13 +102,12 @@ export default function ReviewsSection() {
   }
 
   useEffect(() => {
-    // Sempre carregar dados mock no início
+    // Carregar e atualizar quando o filtro mudar
     applyFilter(activeFilter)
-  }, [])
+  }, [activeFilter])
 
   const handleFilterChange = (filter: ReviewFilter) => {
     setActiveFilter(filter)
-    applyFilter(filter)
   }
 
   const getFilterLabel = (filter: ReviewFilter) => {
