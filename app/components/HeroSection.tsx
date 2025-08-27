@@ -19,7 +19,7 @@ export default function HeroSection() {
           Explorar Filmes
         </Link>
         <Link 
-          href="/cadastro" 
+          href="/register" 
           className="border-2 border-purple-500 text-purple-400 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-purple-500 hover:text-white transition-all"
         >
           Começar Agora

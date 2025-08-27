@@ -21,14 +21,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="pt-BR">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body>
         <SupabaseProvider>
           <AuthProvider>
             {children}
@@ -36,5 +34,5 @@ export default function RootLayout({
         </SupabaseProvider>
       </body>
     </html>
-  );
+  )
 }

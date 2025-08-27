@@ -9,9 +9,18 @@ export async function middleware(req: NextRequest) {
     },
   })
 
+  // Verificar se as variáveis de ambiente estão disponíveis
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('Variáveis de ambiente do Supabase não encontradas no middleware')
+    return response
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get(name: string) {
@@ -61,16 +70,19 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getSession()
 
   // Rotas que requerem autenticação
-  const protectedRoutes = ['/perfil', '/avaliar', '/minhas-avaliacoes']
+  const protectedRoutes = ['/dashboard', '/perfil', '/avaliar', '/minhas-avaliacoes']
   const isProtectedRoute = protectedRoutes.some(route => 
     req.nextUrl.pathname.startsWith(route)
   )
 
   // Rotas de autenticação (login/cadastro)
-  const authRoutes = ['/login', '/cadastro']
+  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password']
   const isAuthRoute = authRoutes.some(route => 
     req.nextUrl.pathname.startsWith(route)
   )
+
+  // Rota home que deve redirecionar usuários logados para dashboard
+  const isHomeRoute = req.nextUrl.pathname === '/'
 
   // Se tentar acessar rota protegida sem estar logado
   if (isProtectedRoute && !session) {
@@ -80,10 +92,17 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(redirectUrl)
   }
 
-  // Se estiver logado e tentar acessar páginas de auth, redirecionar para home
+  // Se estiver logado e tentar acessar páginas de auth, redirecionar para dashboard
   if (isAuthRoute && session) {
     const redirectUrl = req.nextUrl.clone()
-    redirectUrl.pathname = '/'
+    redirectUrl.pathname = '/dashboard'
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  // Se estiver logado e tentar acessar a home, redirecionar para dashboard
+  if (isHomeRoute && session) {
+    const redirectUrl = req.nextUrl.clone()
+    redirectUrl.pathname = '/dashboard'
     return NextResponse.redirect(redirectUrl)
   }
 
