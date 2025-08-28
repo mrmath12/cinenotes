@@ -17,6 +17,7 @@ export default function ForgotPasswordForm() {
     setError(null)
 
     try {
+      if (!supabase) throw new Error('Configuração do Supabase ausente')
       const redirectTo = `${window.location.origin}/reset-password`
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo,

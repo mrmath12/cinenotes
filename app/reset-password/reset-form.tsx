@@ -16,6 +16,7 @@ export default function ResetPasswordForm() {
   const [canReset, setCanReset] = useState(false)
 
   useEffect(() => {
+    if (!supabase) return
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {
       if (event === 'PASSWORD_RECOVERY') {
         setCanReset(true)
@@ -48,6 +49,7 @@ export default function ResetPasswordForm() {
     setError(null)
 
     try {
+      if (!supabase) throw new Error('Configuração do Supabase ausente')
       const { error } = await supabase.auth.updateUser({ password })
       if (error) throw error
       setMessage('Senha atualizada com sucesso! Redirecionando para login...')
