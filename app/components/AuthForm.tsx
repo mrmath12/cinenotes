@@ -24,7 +24,6 @@ export default function AuthForm({ mode = 'login' }: AuthFormProps) {
     setLoading(true)
     setError(null)
 
-    // Validação para registro
     if (formMode === 'register') {
       if (password !== confirmPassword) {
         setError('As senhas não coincidem')
@@ -86,8 +85,8 @@ export default function AuthForm({ mode = 'login' }: AuthFormProps) {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-8 bg-white rounded-2xl shadow-lg border border-gray-200">
-      <h2 className="text-3xl font-extrabold mb-6 text-center text-purple-900 tracking-tight">
+    <div className="w-full max-w-md mx-auto p-8 bg-white rounded-2xl shadow-lg border border-muted-200">
+      <h2 className="text-3xl font-extrabold mb-6 text-center text-primary-900 tracking-tight">
         {formMode === 'login' ? 'Entrar' : 'Criar Conta'}
       </h2>
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -98,7 +97,7 @@ export default function AuthForm({ mode = 'login' }: AuthFormProps) {
             value={fullName}
             onChange={e => setFullName(e.target.value)}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition text-gray-900 placeholder-gray-500"
+            className="w-full px-4 py-3 border border-muted-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-focus transition text-muted-800 placeholder-muted-400"
           />
         )}
         <input
@@ -107,7 +106,7 @@ export default function AuthForm({ mode = 'login' }: AuthFormProps) {
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition text-gray-900 placeholder-gray-500"
+          className="w-full px-4 py-3 border border-muted-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-focus transition text-muted-800 placeholder-muted-400"
         />
         <input
           type="password"
@@ -115,7 +114,7 @@ export default function AuthForm({ mode = 'login' }: AuthFormProps) {
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition text-gray-900 placeholder-gray-500"
+          className="w-full px-4 py-3 border border-muted-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-focus transition text-muted-800 placeholder-muted-400"
         />
         {formMode === 'register' && (
           <input
@@ -124,33 +123,33 @@ export default function AuthForm({ mode = 'login' }: AuthFormProps) {
             value={confirmPassword}
             onChange={e => setConfirmPassword(e.target.value)}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition text-gray-900 placeholder-gray-500"
+            className="w-full px-4 py-3 border border-muted-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-focus transition text-muted-800 placeholder-muted-400"
           />
         )}
-        {error && <div className="text-red-600 text-sm text-center">{error}</div>}
+        {error && <div className="text-danger text-sm text-center">{error}</div>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-purple-900 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+          className="w-full bg-primary-900 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition disabled:opacity-60"
         >
           {loading ? 'Carregando...' : formMode === 'login' ? 'Entrar' : 'Cadastrar'}
         </button>
       </form>
-      <div className="mt-6 text-center text-sm text-gray-600">
+      <div className="mt-6 text-center text-sm text-muted-600">
         {formMode === 'login' ? (
           <div className="space-y-2">
             <span>
               Não tem conta?{' '}
               <button
                 type="button"
-                className="text-blue-600 hover:underline font-medium"
+                className="text-link hover:underline font-medium"
                 onClick={() => handleModeChange('register')}
               >
                 Cadastre-se
               </button>
             </span>
             <div>
-              <a href="/forgot-password" className="text-blue-600 hover:underline font-medium">Esqueci minha senha</a>
+              <a href="/forgot-password" className="text-link hover:underline font-medium">Esqueci minha senha</a>
             </div>
           </div>
         ) : (
@@ -158,7 +157,7 @@ export default function AuthForm({ mode = 'login' }: AuthFormProps) {
             Já tem conta?{' '}
             <button
               type="button"
-              className="text-blue-600 hover:underline font-medium"
+              className="text-link hover:underline font-medium"
               onClick={() => handleModeChange('login')}
             >
               Entrar

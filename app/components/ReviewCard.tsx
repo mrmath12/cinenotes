@@ -27,22 +27,22 @@ export default function ReviewCard({ review }: ReviewCardProps) {
           <span className="text-white font-medium">
             {review.profiles?.full_name || review.profiles?.username || 'Usuário'}
           </span>
-          <span className="text-purple-300">•</span>
-          <span className="text-purple-200 text-sm">
+          <span className="text-primary-300">•</span>
+          <span className="text-primary-200 text-sm">
             {review.movies?.title} ({review.movies?.year})
           </span>
         </div>
         <div className="flex items-center space-x-1">
-          <span className="text-yellow-400">★</span>
+          <span className="text-star">★</span>
           <span className="text-white font-medium">{review.score_overall}/10</span>
         </div>
       </div>
-      
+
       {review.comment && (
-        <p className="text-gray-300 text-sm line-clamp-3 mb-3">{review.comment}</p>
+        <p className="text-muted-300 text-sm line-clamp-3 mb-3">{review.comment}</p>
       )}
-      
-      <div className="text-purple-300 text-xs">
+
+      <div className="text-primary-300 text-xs">
         {new Date(review.created_at).toLocaleDateString('pt-BR')}
       </div>
     </div>

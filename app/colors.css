@@ -1,0 +1,49 @@
+/*
+ * Paleta de cores do CineNotes
+ * Para mudar o tema, altere os valores aqui.
+ * Preto e branco usam os padrões do Tailwind (white, black).
+ */
+
+@theme {
+  /* === Cor principal (substituindo purple) === */
+  --color-primary-200: #E0DFF7;
+  --color-primary-300: #C4C2F2;
+  --color-primary-400: #9D9AE6;
+  --color-primary-500: #7873d9;
+  --color-primary-600: #5b55c9;
+  --color-primary-700: #4842ad;
+  --color-primary-900: #353380;
+
+  /* === Cor de destaque (substituindo pink) === */
+  --color-accent-400: #8be89c;
+  --color-accent-500: #66de7e;
+  --color-accent-600: #45cc69;
+
+  /* === Fundos (substituindo slate-900 e purple-900) === */
+  --color-bg-dark: #0e2225;
+  --color-bg-mid: #1a2c88;
+
+  /* === Texto neutro (substituindo gray-*) === */
+  --color-muted-200: #e5e7eb;
+  --color-muted-300: #d1d5db;
+  --color-muted-400: #9ca3af;
+  --color-muted-600: #4b5563;
+  --color-muted-800: #1f2937;
+
+  /* === Links e foco === */
+  --color-link: #2563eb;
+  --color-focus: #60a5fa;
+
+  /* === Feedback === */
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+  --color-success: #15803d;
+
+  /* === Componentes especiais === */
+  --color-star: #facc15;
+  --color-info-bg: #3b82f6;
+  --color-info-text: #bfdbfe;
+  --color-badge-bg: #eab308;
+  --color-badge-text: #fde047;
+  --color-badge-border: #eab308;
+}
