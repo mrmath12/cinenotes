@@ -70,7 +70,7 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getSession()
 
   // Rotas que requerem autenticação
-  const protectedRoutes = ['/dashboard', '/perfil', '/avaliar', '/minhas-avaliacoes']
+  const protectedRoutes = ['/dashboard', '/perfil', '/nova-avaliacao', '/avaliacoes']
   const isProtectedRoute = protectedRoutes.some(route => 
     req.nextUrl.pathname.startsWith(route)
   )
@@ -80,9 +80,6 @@ export async function middleware(req: NextRequest) {
   const isAuthRoute = authRoutes.some(route => 
     req.nextUrl.pathname.startsWith(route)
   )
-
-  // Rota home que deve redirecionar usuários logados para dashboard
-  const isHomeRoute = req.nextUrl.pathname === '/'
 
   // Se tentar acessar rota protegida sem estar logado
   if (isProtectedRoute && !session) {
@@ -94,13 +91,6 @@ export async function middleware(req: NextRequest) {
 
   // Se estiver logado e tentar acessar páginas de auth, redirecionar para dashboard
   if (isAuthRoute && session) {
-    const redirectUrl = req.nextUrl.clone()
-    redirectUrl.pathname = '/dashboard'
-    return NextResponse.redirect(redirectUrl)
-  }
-
-  // Se estiver logado e tentar acessar a home, redirecionar para dashboard
-  if (isHomeRoute && session) {
     const redirectUrl = req.nextUrl.clone()
     redirectUrl.pathname = '/dashboard'
     return NextResponse.redirect(redirectUrl)
