@@ -32,8 +32,8 @@ export default function ForgotPasswordForm() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-8 bg-white rounded-2xl shadow-lg border border-gray-200">
-      <h2 className="text-3xl font-extrabold mb-6 text-center text-purple-900 tracking-tight">Redefinir senha</h2>
+    <div className="w-full max-w-md mx-auto p-8 bg-white rounded-2xl shadow-lg border border-muted-200">
+      <h2 className="text-3xl font-extrabold mb-6 text-center text-primary-900 tracking-tight">Redefinir senha</h2>
       <form onSubmit={handleSubmit} className="space-y-5">
         <input
           type="email"
@@ -41,14 +41,14 @@ export default function ForgotPasswordForm() {
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition text-gray-900 placeholder-gray-500"
+          className="w-full px-4 py-3 border border-muted-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-focus transition text-muted-800 placeholder-muted-400"
         />
-        {message && <div className="text-green-700 text-sm text-center">{message}</div>}
-        {error && <div className="text-red-600 text-sm text-center">{error}</div>}
+        {message && <div className="text-success text-sm text-center">{message}</div>}
+        {error && <div className="text-danger text-sm text-center">{error}</div>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-purple-900 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+          className="w-full bg-primary-900 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition disabled:opacity-60"
         >
           {loading ? 'Enviando...' : 'Enviar link de redefinição'}
         </button>

@@ -77,13 +77,12 @@ export default function ReviewsSection() {
   const [activeFilter, setActiveFilter] = useState<ReviewFilter>('recentes')
   const [loading, setLoading] = useState(false)
 
-  // Função para aplicar filtros aos dados mock
   const applyFilter = (filter: ReviewFilter) => {
     setLoading(true)
-    
+
     setTimeout(() => {
       const filteredReviews = [...mockReviews]
-      
+
       switch (filter) {
         case 'recentes':
           filteredReviews.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -95,14 +94,13 @@ export default function ReviewsSection() {
           filteredReviews.sort(() => Math.random() - 0.5)
           break
       }
-      
+
       setReviews(filteredReviews)
       setLoading(false)
-    }, 300) // Simular loading
+    }, 300)
   }
 
   useEffect(() => {
-    // Carregar e atualizar quando o filtro mudar
     applyFilter(activeFilter)
   }, [activeFilter])
 
@@ -124,8 +122,8 @@ export default function ReviewsSection() {
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold text-white">Reviews da Comunidade</h3>
           <div className="flex items-center space-x-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-400"></div>
-            <span className="text-purple-200">Carregando...</span>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-400"></div>
+            <span className="text-primary-200">Carregando...</span>
           </div>
         </div>
       </div>
@@ -137,11 +135,11 @@ export default function ReviewsSection() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           <h3 className="text-xl font-semibold text-white">Reviews da Comunidade</h3>
-          <span className="px-2 py-1 bg-yellow-500/20 text-yellow-300 text-xs rounded-full border border-yellow-500/30">
+          <span className="px-2 py-1 bg-badge-bg/20 text-badge-text text-xs rounded-full border border-badge-border/30">
             Modo Demo
           </span>
         </div>
-        
+
         {/* Filtros */}
         <div className="flex space-x-2">
           {(['recentes', 'mais-curtidos', 'estou-com-sorte'] as ReviewFilter[]).map((filter) => (
@@ -150,8 +148,8 @@ export default function ReviewsSection() {
               onClick={() => handleFilterChange(filter)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeFilter === filter
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-white/10 text-purple-200 hover:bg-white/20'
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-white/10 text-primary-200 hover:bg-white/20'
               }`}
             >
               {getFilterLabel(filter)}
@@ -165,10 +163,10 @@ export default function ReviewsSection() {
           <ReviewCard key={review.id} review={review} />
         ))}
       </div>
-      
-      <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-        <p className="text-blue-200 text-sm text-center">
-          💡 <strong>Dica:</strong> Estes são dados de demonstração. 
+
+      <div className="mt-6 p-4 bg-info-bg/10 border border-info-bg/20 rounded-lg">
+        <p className="text-info-text text-sm text-center">
+          💡 <strong>Dica:</strong> Estes são dados de demonstração.
           Conecte seu banco de dados para ver reviews reais da comunidade!
         </p>
       </div>
