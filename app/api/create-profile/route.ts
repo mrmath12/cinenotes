@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '../../../lib/supabase-server'
+import { createAdminClient } from '../../../lib/supabase-admin'
 
 export const runtime = 'nodejs'
 
@@ -7,20 +7,10 @@ const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
-    const { data: authData, error: authError } = await supabase.auth.getUser()
-    if (authError || !authData?.user) {
-      return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
-    }
-
     const body = await request.json()
     const { id, full_name, username, avatar_color } = body ?? {}
 
-    if (!id || id !== authData.user.id) {
-      return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
-    }
-
-    if (!full_name || !username || !avatar_color) {
+    if (!id || !full_name || !username || !avatar_color) {
       return NextResponse.json({ error: 'Campos obrigatórios ausentes' }, { status: 400 })
     }
 
@@ -31,9 +21,17 @@ export async function POST(request: Request) {
       )
     }
 
+    const admin = createAdminClient()
+
+    // Verifica que o ID realmente existe em auth.users antes de inserir
+    const { data: authUser, error: authError } = await admin.auth.admin.getUserById(id)
+    if (authError || !authUser?.user) {
+      return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 401 })
+    }
+
     const normalizedUsername = username.toLowerCase()
 
-    const { error } = await supabase
+    const { error } = await admin
       .from('profiles')
       .upsert(
         { id, full_name, username: normalizedUsername, avatar_color },
