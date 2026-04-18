@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import ReviewsSection from '../components/ReviewsSection'
 
 export default function DashboardPage() {
   const { user, loading } = useAuth()
@@ -56,8 +55,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Reviews Section - Ocupa toda a largura */}
-          <ReviewsSection />
         </div>
       </main>
 
