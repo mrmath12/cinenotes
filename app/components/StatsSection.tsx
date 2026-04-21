@@ -17,7 +17,7 @@ export default async function StatsSection() {
 
   return (
     <section className="mt-20 text-center">
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-3 gap-8">
         <div>
           <div className="text-3xl font-bold text-white mb-2">{totalMovies}</div>
           <div className="text-muted-400">Filmes Avaliados</div>
