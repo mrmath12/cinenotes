@@ -39,6 +39,9 @@
   --color-danger-hover: #b91c1c;
   --color-success: #15803d;
 
+  /* === Superfície de componentes (cards, drawers, dropdowns) === */
+  --color-surface: #112226;
+
   /* === Componentes especiais === */
   --color-star: #facc15;
   --color-info-bg: #3b82f6;

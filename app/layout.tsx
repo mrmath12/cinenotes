@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Unica_One } from "next/font/google";
 import "./globals.css";
 import { SupabaseProvider } from "../lib/supabase-provider";
 import { AuthProvider } from "../lib/auth-context";
 import { Toaster } from "sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const unicaOne = Unica_One({
+  variable: "--font-unica-one",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -27,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={unicaOne.variable}>
         <SupabaseProvider>
           <AuthProvider>
             {children}
