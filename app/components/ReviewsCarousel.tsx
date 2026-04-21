@@ -95,19 +95,19 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
       onMouseLeave={() => setPaused(false)}
     >
       {/* Cards container */}
-      <div className="flex gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {getVisible().map((idx, pos) => {
           const review = reviews[idx]
           return (
             <div
               key={review.id}
-              className={`flex-shrink-0 transition-transform duration-300 ${
+              className={`transition-transform duration-300 ${
                 pos === 0 ? 'block' : 'hidden md:block'
-              } w-full md:w-1/3`}
+              }`}
             >
               <div className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 hover:border-white/30 transition-all h-full">
                 {/* Poster */}
-                <div className="relative w-full h-48 bg-white/5">
+                <div className="relative w-full aspect-[2/3] bg-white/5">
                   {review.poster_url ? (
                     <Image
                       src={review.poster_url}

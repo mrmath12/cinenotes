@@ -20,6 +20,25 @@ export async function getUserProfile(userId: string): Promise<Profile> {
   return data as Profile
 }
 
+export async function updateProfile(
+  userId: string,
+  data: { full_name: string; username: string; avatar_color: string }
+): Promise<void> {
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from('profiles')
+    .update(data)
+    .eq('id', userId)
+
+  if (error) {
+    if (error.code === '23505') throw new Error('username_taken')
+    throw new Error('Erro ao atualizar perfil')
+  }
+
+  revalidatePath('/perfil')
+}
+
 export async function deleteReview(reviewId: string): Promise<void> {
   const supabase = await createClient()
 

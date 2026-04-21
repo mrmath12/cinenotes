@@ -101,7 +101,7 @@ export default function CommunityFeed() {
       <h2 className="text-xl font-semibold text-white mb-4">Avaliações da Comunidade</h2>
 
       {initialLoading && (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <SkeletonCard key={i} />
           ))}
@@ -123,7 +123,7 @@ export default function CommunityFeed() {
       )}
 
       {!initialLoading && reviews.length > 0 && (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {reviews.map((review) => (
             <ReviewCard key={review.id} review={review} />
           ))}
