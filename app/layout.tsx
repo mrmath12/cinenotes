@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Unica_One } from "next/font/google";
+import { Fira_Sans } from "next/font/google";
 import "./globals.css";
 import { SupabaseProvider } from "../lib/supabase-provider";
 import { AuthProvider } from "../lib/auth-context";
 import { Toaster } from "sonner";
 
-const unicaOne = Unica_One({
-  variable: "--font-unica-one",
+const firaSans = Fira_Sans({
+  variable: "--font-fira-sans",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={unicaOne.variable}>
+      <body className={firaSans.variable}>
         <SupabaseProvider>
           <AuthProvider>
             {children}
