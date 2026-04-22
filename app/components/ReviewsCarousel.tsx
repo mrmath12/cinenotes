@@ -142,7 +142,8 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
               key={review.id}
               className={`transition-transform duration-300 ${visibilityClass(pos)}`}
             >
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 hover:border-white/30 transition-all h-full">
+              <Link href={`/filmes/${review.tmdb_id}`} className="block h-full">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 hover:border-primary-400/60 hover:scale-[1.02] transition-all h-full cursor-pointer">
                 {/* Poster */}
                 <div className="relative w-full aspect-[2/3] bg-white/5">
                   {review.poster_url ? (
@@ -182,6 +183,7 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
                   </div>
                 </div>
               </div>
+              </Link>
             </div>
           )
         })}
