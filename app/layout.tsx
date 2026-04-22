@@ -4,6 +4,7 @@ import "./globals.css";
 import { SupabaseProvider } from "../lib/supabase-provider";
 import { AuthProvider } from "../lib/auth-context";
 import { Toaster } from "sonner";
+import Header from "./components/Header";
 
 const firaSans = Fira_Sans({
   variable: "--font-fira-sans",
@@ -26,7 +27,10 @@ export default function RootLayout({
       <body className={firaSans.variable}>
         <SupabaseProvider>
           <AuthProvider>
-            {children}
+            <Header />
+            <main className="pt-[72px]">
+              {children}
+            </main>
             <Toaster position="top-right" richColors />
           </AuthProvider>
         </SupabaseProvider>

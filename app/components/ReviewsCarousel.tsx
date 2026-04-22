@@ -12,10 +12,23 @@ interface CarouselReview {
   title: string
   year: number
   poster_url: string | null
+  reviewer: string | null
 }
 
 interface ReviewsCarouselProps {
   reviews: CarouselReview[]
+}
+
+function PosterImage({ src, alt, sizes }: { src: string; alt: string; sizes: string }) {
+  const [error, setError] = useState(false)
+  if (error) return (
+    <div className="w-full h-full flex items-center justify-center text-muted-400">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+      </svg>
+    </div>
+  )
+  return <Image src={src} alt={alt} fill className="object-cover" sizes={sizes} onError={() => setError(true)} />
 }
 
 function scoreColor(score: number): string {
@@ -79,13 +92,21 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
     )
   }
 
-  // Build visible indices: current, current+1, current+2 (wrapping)
+  // Build visible indices: up to 5 cards (wrapping)
   const getVisible = (): number[] => {
     const indices: number[] = []
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 5; i++) {
       indices.push((current + i) % total)
     }
     return indices
+  }
+
+  const visibilityClass = (pos: number): string => {
+    if (pos === 0) return 'block'
+    if (pos === 1) return 'hidden sm:block'
+    if (pos === 2) return 'hidden md:block'
+    if (pos === 3) return 'hidden lg:block'
+    return 'hidden xl:block'
   }
 
   return (
@@ -95,26 +116,22 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
       onMouseLeave={() => setPaused(false)}
     >
       {/* Cards container */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {getVisible().map((idx, pos) => {
           const review = reviews[idx]
           return (
             <div
               key={review.id}
-              className={`transition-transform duration-300 ${
-                pos === 0 ? 'block' : 'hidden md:block'
-              }`}
+              className={`transition-transform duration-300 ${visibilityClass(pos)}`}
             >
               <div className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 hover:border-white/30 transition-all h-full">
                 {/* Poster */}
                 <div className="relative w-full aspect-[2/3] bg-white/5">
                   {review.poster_url ? (
-                    <Image
+                    <PosterImage
                       src={review.poster_url}
                       alt={review.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 33vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-400">
@@ -136,9 +153,14 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
                       {review.final_score.toFixed(1)}
                     </div>
                   </div>
-                  <p className="text-muted-400 text-xs mt-2">
-                    {new Date(review.created_at).toLocaleDateString('pt-BR')}
-                  </p>
+                  <div className="flex items-center justify-between mt-2">
+                    <p className="text-muted-400 text-xs">
+                      {new Date(review.created_at).toLocaleDateString('pt-BR')}
+                    </p>
+                    {review.reviewer && (
+                      <p className="text-muted-400 text-xs truncate ml-2">@{review.reviewer}</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

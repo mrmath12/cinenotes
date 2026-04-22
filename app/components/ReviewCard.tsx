@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 
 interface ReviewCardData {
@@ -29,6 +30,7 @@ function scoreBadgeClass(score: number): string {
 }
 
 export default function ReviewCard({ review }: ReviewCardProps) {
+  const [imgError, setImgError] = useState(false)
   const displayName =
     review.profiles?.full_name || review.profiles?.username || 'Usuário'
   const initials = displayName.charAt(0).toUpperCase()
@@ -38,13 +40,14 @@ export default function ReviewCard({ review }: ReviewCardProps) {
     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:border-white/30 transition-all flex gap-4">
       {/* Poster */}
       <div className="flex-shrink-0 w-16 h-24 rounded-lg overflow-hidden bg-white/10 relative">
-        {review.movies?.poster_url ? (
+        {review.movies?.poster_url && !imgError ? (
           <Image
             src={review.movies.poster_url}
             alt={review.movies?.title || 'Poster'}
             fill
             className="object-cover"
             sizes="64px"
+            onError={() => setImgError(true)}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white/30 text-xs text-center px-1">

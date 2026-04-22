@@ -8,7 +8,6 @@ import { toast } from 'sonner'
 import { useAuth } from '../../lib/auth-context'
 import { createSupabaseBrowserClient } from '../../lib/supabase'
 import { deleteReview } from '../../lib/actions'
-import Header from '../components/Header'
 import Footer from '../components/Footer'
 
 interface ReviewWithMovie {
@@ -161,8 +160,6 @@ export default function AvaliacoesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg-dark via-bg-mid to-bg-dark flex flex-col">
-      <Header />
-
       <main className="flex-1 container mx-auto px-4 py-8 max-w-3xl">
         <h1 className="text-2xl font-bold text-white mb-6">Minhas Avaliações</h1>
 
