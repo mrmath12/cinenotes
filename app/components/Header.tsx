@@ -82,14 +82,18 @@ export default function Header() {
         <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
-              <Link href="/" className="text-white font-bold text-lg">C</Link>
-            </div>
-            <Link href="/" className="text-white text-xl font-bold hover:text-primary-300 transition-colors">
-              CineNotes
-            </Link>
-          </div>
+          <Link href="/" className="flex items-center">
+            <img
+              src="/logo/full/cinenotes-logotipo-full-branco.svg"
+              alt="CineNotes"
+              className="hidden md:block h-8 w-auto"
+            />
+            <img
+              src="/logo/symbol/cinenotes-logotipo-symbol-branco.svg"
+              alt="CineNotes"
+              className="md:hidden h-8 w-auto"
+            />
+          </Link>
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center space-x-6">
@@ -177,14 +181,13 @@ export default function Header() {
 
       {/* Mobile menu overlay */}
       {mobileOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-black/60" onClick={closeMobile}>
+        <div className="md:hidden fixed inset-0 z-[60] bg-black/60" onClick={closeMobile}>
           <div
             className="absolute top-0 right-0 h-full w-72 bg-surface border-l border-white/10 shadow-2xl flex flex-col py-6 px-6"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header do drawer */}
             <div className="flex items-center justify-between mb-8">
-              <span className="text-white font-bold text-lg">Menu</span>
               <button
                 onClick={closeMobile}
                 className="text-muted-300 hover:text-white transition-colors"
