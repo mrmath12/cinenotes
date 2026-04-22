@@ -54,6 +54,7 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paused, total, current])
 
   if (total === 0) {

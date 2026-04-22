@@ -172,7 +172,6 @@ export default function PerfilPage() {
 
   const displayName = profile?.full_name || user.email?.split('@')[0] || 'Usuário'
   const avatarColor = profile?.avatar_color || '#7C3AED'
-  const initials = getInitials(displayName)
   const avgScore =
     reviews.length > 0
       ? reviews.reduce((sum, r) => sum + r.final_score, 0) / reviews.length

@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
   const reviewedIds = new Set(scoreMap.keys())
 
   // On page 1 (no search): load reviewed movies directly from internal DB
-  let internalMovies: FilmeItem[] = []
+  const internalMovies: FilmeItem[] = []
   if (!query && page === 1 && reviewedIds.size > 0) {
     const { data: moviesData } = await supabase
       .from('movies')

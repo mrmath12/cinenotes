@@ -107,6 +107,7 @@ export default function NovaAvaliacaoForm() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, selectedMovie, user])
 
   async function checkReviewed(tmdbIds: number[]) {
