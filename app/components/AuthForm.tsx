@@ -10,6 +10,7 @@ const USERNAME_REGEX = /^[a-zA-Z0-9_]+$/
 
 interface AuthFormProps {
   mode?: 'login' | 'register'
+  redirectTo?: string
 }
 
 function mapAuthError(message: string): string {
@@ -25,7 +26,7 @@ function mapAuthError(message: string): string {
   return message
 }
 
-export default function AuthForm({ mode = 'login' }: AuthFormProps) {
+export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) {
   const { signIn, signUp } = useAuth()
   const supabase = useSupabase()
   const router = useRouter()
@@ -111,7 +112,7 @@ export default function AuthForm({ mode = 'login' }: AuthFormProps) {
     try {
       if (formMode === 'login') {
         await signIn(email, password)
-        router.push('/dashboard')
+        router.push(redirectTo || '/dashboard')
       } else {
         const avatarColor = getRandomAvatarColor()
         const normalizedUsername = username.toLowerCase()

@@ -85,7 +85,9 @@ export async function middleware(req: NextRequest) {
   if (isProtectedRoute && !session) {
     const redirectUrl = req.nextUrl.clone()
     redirectUrl.pathname = '/login'
-    redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname)
+    redirectUrl.search = ''
+    const destination = req.nextUrl.pathname + req.nextUrl.search
+    redirectUrl.searchParams.set('redirectTo', destination)
     return NextResponse.redirect(redirectUrl)
   }
 
