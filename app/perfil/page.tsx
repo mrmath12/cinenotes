@@ -250,8 +250,9 @@ export default function PerfilPage() {
             <div className="border-t border-white/10 pt-5 flex flex-col gap-4">
               {/* Name */}
               <div>
-                <label className="block text-muted-300 text-sm mb-1">Nome completo</label>
+                <label htmlFor="edit-name" className="block text-muted-300 text-sm mb-1">Nome completo</label>
                 <input
+                  id="edit-name"
                   type="text"
                   value={editName}
                   onChange={e => { setEditName(e.target.value); setNameError('') }}
@@ -263,10 +264,11 @@ export default function PerfilPage() {
 
               {/* Username */}
               <div>
-                <label className="block text-muted-300 text-sm mb-1">Username</label>
+                <label htmlFor="edit-username" className="block text-muted-300 text-sm mb-1">Username</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-400 text-sm">@</span>
                   <input
+                    id="edit-username"
                     type="text"
                     value={editUsername}
                     onChange={e => { setEditUsername(e.target.value.toLowerCase()); setUsernameError('') }}
