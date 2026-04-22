@@ -270,48 +270,49 @@ export default async function FilmeDetailPage({
             <span>Explorar Filmes</span>
           </Link>
 
-          {/* Community score */}
-          {avgScore !== null && (
-            <div className="flex items-center justify-between mb-8">
-              <div className='flex flex-col md:flex-row gap-3 items-center'>
-                <div
-                  className={`${getScoreColor(avgScore)} text-white font-bold text-3xl px-4 py-2 rounded-xl`}
-                >
-                  {avgScore.toFixed(1)}
-                </div>
-                <div className="flex flex-col items-center md:items-start">
-                  <span className="text-white font-semibold text-lg">Nota da Comunidade</span>
-                  <span className="text-muted-400 text-xs">
-                    {reviews.length} {reviews.length === 1 ? 'avaliação' : 'avaliações'}
-                  </span>
-                </div>
-              </div>             
-                {externalRatings.length > 0 && (
-                  <section className="flex flex-col-reverse md:flex-row items-center gap-3">
-                    <div className="flex flex-wrap gap-3">
-                      {externalRatings.map(rating => {
-                        const label =
-                          rating.source === 'Internet Movie Database' ? 'IMDb' :
-                          rating.source === 'Rotten Tomatoes' ? 'Rotten Tomatoes' :
-                          rating.source === 'Metacritic' ? 'Metacritic' :
-                          rating.source
-                        const accent =
-                          rating.source === 'Internet Movie Database' ? 'border-yellow-500/40 bg-yellow-500/10 text-yellow-300' :
-                          rating.source === 'Rotten Tomatoes' ? 'border-red-500/40 bg-red-500/10 text-red-300' :
-                          rating.source === 'Metacritic' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' :
-                          'border-white/20 bg-white/5 text-white'
-                        return (
-                          <div
-                            key={rating.source}
-                            className={`flex flex-col items-center gap-0.5 border rounded-xl px-4 py-2.5 ${accent}`}
-                          >
-                          <span className="text-xs opacity-70">{label}</span>
-                          <span className="text-base font-bold">{rating.value}</span>
-                        </div>
-                      )
-                    })}
+          {/* Scores row: community + external */}
+          {(avgScore !== null || externalRatings.length > 0) && (
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+              {avgScore !== null && (
+                <div className="flex flex-col md:flex-row gap-3 items-center">
+                  <div
+                    className={`${getScoreColor(avgScore)} text-white font-bold text-3xl px-4 py-2 rounded-xl`}
+                  >
+                    {avgScore.toFixed(1)}
                   </div>
-                </section>
+                  <div className="flex flex-col items-center md:items-start">
+                    <span className="text-white font-semibold text-lg">Nota da Comunidade</span>
+                    <span className="text-muted-400 text-xs">
+                      {reviews.length} {reviews.length === 1 ? 'avaliação' : 'avaliações'}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {externalRatings.length > 0 && (
+                <div className="flex flex-wrap gap-3">
+                  {externalRatings.map(rating => {
+                    const label =
+                      rating.source === 'Internet Movie Database' ? 'IMDb' :
+                      rating.source === 'Rotten Tomatoes' ? 'Rotten Tomatoes' :
+                      rating.source === 'Metacritic' ? 'Metacritic' :
+                      rating.source
+                    const accent =
+                      rating.source === 'Internet Movie Database' ? 'border-yellow-500/40 bg-yellow-500/10 text-yellow-300' :
+                      rating.source === 'Rotten Tomatoes' ? 'border-red-500/40 bg-red-500/10 text-red-300' :
+                      rating.source === 'Metacritic' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' :
+                      'border-white/20 bg-white/5 text-white'
+                    return (
+                      <div
+                        key={rating.source}
+                        className={`flex flex-col items-center gap-0.5 border rounded-xl px-4 py-2.5 ${accent}`}
+                      >
+                        <span className="text-xs opacity-70">{label}</span>
+                        <span className="text-base font-bold">{rating.value}</span>
+                      </div>
+                    )
+                  })}
+                </div>
               )}
             </div>
           )}
@@ -324,8 +325,6 @@ export default async function FilmeDetailPage({
             </p>
           </section>
 
-          {/* External ratings */}
-          
           {/* Community reviews */}
           <section className="mb-8">
             <h2 className="text-white font-semibold text-lg mb-4">
