@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       poster_url: movie.poster_url,
       genres: [],
     },
-    { onConflict: 'tmdb_id', ignoreDuplicates: true }
+    { onConflict: 'tmdb_id' }
   )
 
   if (movieError) {

@@ -8,7 +8,6 @@ import { useAuth } from '../../lib/auth-context'
 import { createSupabaseBrowserClient } from '../../lib/supabase'
 import { getInitials, AVATAR_COLORS } from '../../lib/avatar-colors'
 import { updateProfile } from '../../lib/actions'
-import Header from '../components/Header'
 import Footer from '../components/Footer'
 
 interface Profile {
@@ -181,8 +180,6 @@ export default function PerfilPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg-dark via-bg-mid to-bg-dark flex flex-col">
-      <Header />
-
       <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl">
 
         {/* ── Profile card ── */}

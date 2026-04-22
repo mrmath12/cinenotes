@@ -4,7 +4,6 @@ import { useAuth } from '../../lib/auth-context'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Link from 'next/link'
-import Header from '../components/Header'
 import Footer from '../components/Footer'
 import CommunityFeed from '../components/CommunityFeed'
 
@@ -32,8 +31,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg-dark via-bg-mid to-bg-dark flex flex-col">
-      <Header />
-
       {/* Main Content */}
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
