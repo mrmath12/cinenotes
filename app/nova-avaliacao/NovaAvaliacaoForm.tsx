@@ -39,7 +39,7 @@ function scoreError(val: string): string | null {
   return null
 }
 
-export default function NovaAvaliacaoForm() {
+export default function NovaAvaliacaoForm({ preselectedTmdbId }: { preselectedTmdbId?: string }) {
   const { user } = useAuth()
   const router = useRouter()
 
@@ -66,6 +66,24 @@ export default function NovaAvaliacaoForm() {
 
   // Submitting
   const [submitting, setSubmitting] = useState(false)
+
+  // Pre-select movie from URL param
+  useEffect(() => {
+    if (!preselectedTmdbId || selectedMovie) return
+    fetch(`/api/tmdb/movie/${preselectedTmdbId}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (!data) return
+        setSelectedMovie({
+          tmdb_id: data.tmdb_id,
+          title: data.title,
+          year: data.year,
+          poster_url: data.poster_url,
+        })
+      })
+      .catch(() => {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preselectedTmdbId])
 
   // Debounced TMDB search
   useEffect(() => {

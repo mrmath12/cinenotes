@@ -115,6 +115,16 @@ export default async function FilmeDetailPage({
       .limit(20),
   ])
 
+  const userHasReviewed = user
+    ? (await supabase
+        .from('reviews')
+        .select('id')
+        .eq('movie_id', Number(tmdb_id))
+        .eq('user_id', user.id)
+        .maybeSingle()
+      ).data !== null
+    : false
+
   if (!movie) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-bg-dark via-bg-mid to-bg-dark flex flex-col">
@@ -312,15 +322,21 @@ export default async function FilmeDetailPage({
       {/* Action button — fixed mobile, inline desktop */}
       <div className="fixed bottom-0 left-0 right-0 md:static md:bottom-auto border-t border-white/10 bg-bg-dark/95 md:bg-transparent md:border-t-0 backdrop-blur-sm md:backdrop-blur-none px-4 py-4 md:px-0 md:py-0 md:container md:mx-auto md:max-w-5xl md:pb-8">
         {user ? (
-          <Link
-            href="/nova-avaliacao"
-            className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors shadow-lg"
-          >
-            Avaliar este Filme
-          </Link>
+          userHasReviewed ? (
+            <div className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 font-semibold rounded-xl">
+              Você já avaliou esse filme
+            </div>
+          ) : (
+            <Link
+              href={`/nova-avaliacao?tmdb_id=${tmdb_id}`}
+              className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors shadow-lg"
+            >
+              Avaliar este Filme
+            </Link>
+          )
         ) : (
           <Link
-            href="/login"
+            href={`/nova-avaliacao?tmdb_id=${tmdb_id}`}
             className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold rounded-xl transition-colors"
           >
             Entre para Avaliar
