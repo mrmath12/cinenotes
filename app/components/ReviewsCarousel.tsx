@@ -146,8 +146,8 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
                 {/* Info */}
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="text-white font-semibold leading-tight">{review.title}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-white font-semibold leading-tight truncate">{review.title}</p>
                       <p className="text-muted-400 text-sm">{review.year}</p>
                     </div>
                     <div className={`text-xl font-bold flex-shrink-0 ${scoreColor(review.final_score)}`}>

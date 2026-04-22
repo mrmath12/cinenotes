@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       title: movie.title,
       year: movie.year,
       poster_url: movie.poster_url,
-      genres: [],
+      genres: movie.genre_ids ?? [],
     },
     { onConflict: 'tmdb_id' }
   )

@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CineNotes
 
-## Getting Started
+Plataforma para avaliação de filmes em 5 critérios independentes: roteiro, direção, fotografia, trilha sonora e impacto geral.
 
-First, run the development server:
+## Variáveis de ambiente
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Crie um arquivo `.env.local` na raiz do projeto com as seguintes variáveis:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://<seu-projeto>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
+TMDB_API_KEY=<sua-chave-tmdb>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Variável | Escopo | Descrição |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Cliente + Servidor | URL do projeto Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Cliente + Servidor | Chave anon pública do Supabase |
+| `SUPABASE_SERVICE_ROLE_KEY` | Servidor apenas | Chave service role (usada para inserir em `movies`) |
+| `TMDB_API_KEY` | Servidor apenas | Chave da API do TMDB (não exposta ao cliente) |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Banco de dados
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Execute as migrations SQL no painel do Supabase em **SQL Editor**:
+- Acesse [supabase.com/dashboard](https://supabase.com/dashboard) → seu projeto → SQL Editor
+- Execute os arquivos de migration localizados em `../supabase/migrations/`
 
-## Learn More
+## Rodar localmente
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm install
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Abra [http://localhost:3000](http://localhost:3000) no browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy na Vercel
 
-## Deploy on Vercel
+1. Faça push do projeto para um repositório GitHub
+2. Importe o repositório na [Vercel](https://vercel.com/new)
+3. Configure as 4 variáveis de ambiente no painel da Vercel (Settings → Environment Variables)
+4. Deploy automático a cada push na branch `main`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Framework**: Next.js 15 (App Router)
+- **UI**: React 19 + TypeScript + Tailwind CSS 4
+- **Banco**: Supabase (PostgreSQL + Auth + RLS)
+- **API externa**: TMDB v3
+- **Deploy**: Vercel

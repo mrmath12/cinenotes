@@ -207,7 +207,7 @@ export default function NovaAvaliacaoForm() {
     >
       {/* Movie search */}
       <div>
-        <label className="block text-white font-medium mb-2">Filme</label>
+        <label htmlFor="movie-search" className="block text-white font-medium mb-2">Filme</label>
 
         {selectedMovie ? (
           <div className="flex items-center gap-3 bg-white/10 rounded-lg p-3 border border-white/20">
@@ -242,6 +242,7 @@ export default function NovaAvaliacaoForm() {
         ) : (
           <div className="relative">
             <input
+              id="movie-search"
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -329,11 +330,12 @@ export default function NovaAvaliacaoForm() {
             const err = scoreError(scores[c.key])
             return (
               <div key={c.key} className="flex items-start gap-4">
-                <label className="w-32 text-primary-200 text-sm pt-2 flex-shrink-0">
+                <label htmlFor={`score-${c.key}`} className="w-32 text-primary-200 text-sm pt-2 flex-shrink-0">
                   {c.label}
                 </label>
                 <div className="flex-1">
                   <input
+                    id={`score-${c.key}`}
                     type="number"
                     min="1"
                     max="10"

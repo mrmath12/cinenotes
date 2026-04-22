@@ -61,9 +61,9 @@ interface DeleteModalProps {
 
 function DeleteModal({ onConfirm, onCancel, loading }: DeleteModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
       <div className="bg-surface border border-white/10 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
-        <h2 className="text-white text-lg font-semibold mb-2">Excluir avaliação?</h2>
+        <h2 id="delete-modal-title" className="text-white text-lg font-semibold mb-2">Excluir avaliação?</h2>
         <p className="text-muted-300 text-sm mb-6">Essa ação não pode ser desfeita.</p>
         <div className="flex justify-end gap-3">
           <button
