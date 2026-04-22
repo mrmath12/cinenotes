@@ -34,6 +34,7 @@ export default async function ReviewsSection() {
     const profile = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles
     return {
       id: r.id as string,
+      tmdb_id: r.movie_id as number,
       movie_id: r.movie_id as number,
       final_score: r.final_score as number,
       created_at: r.created_at as string,

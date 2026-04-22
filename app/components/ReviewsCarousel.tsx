@@ -7,6 +7,7 @@ import { useAuth } from '../../lib/auth-context'
 
 interface CarouselReview {
   id: string
+  tmdb_id: number
   final_score: number
   created_at: string
   title: string
@@ -19,7 +20,7 @@ interface ReviewsCarouselProps {
   reviews: CarouselReview[]
 }
 
-function PosterImage({ src, alt, sizes }: { src: string; alt: string; sizes: string }) {
+function PosterImage({ src, alt, sizes, tmdb_id }: { src: string; alt: string; sizes: string; tmdb_id: number }) {
   const [error, setError] = useState(false)
   if (error) return (
     <div className="w-full h-full flex items-center justify-center text-muted-400">
@@ -28,7 +29,23 @@ function PosterImage({ src, alt, sizes }: { src: string; alt: string; sizes: str
       </svg>
     </div>
   )
-  return <Image src={src} alt={alt} fill className="object-cover" sizes={sizes} onError={() => setError(true)} />
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      className="object-cover"
+      sizes={sizes}
+      onError={() => {
+        setError(true)
+        fetch('/api/movies/clear-poster', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tmdb_id }),
+        })
+      }}
+    />
+  )
 }
 
 function scoreColor(score: number): string {
@@ -133,6 +150,7 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
                       src={review.poster_url}
                       alt={review.title}
                       sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
+                      tmdb_id={review.tmdb_id}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-400">
