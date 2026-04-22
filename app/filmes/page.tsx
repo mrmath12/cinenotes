@@ -131,6 +131,11 @@ export default function FilmesPage() {
   const sentinelRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const loadMoreRef = useRef<() => void>(() => {})
+  const genreScrollRef = useRef<HTMLDivElement>(null)
+
+  function scrollGenres(dir: 'left' | 'right') {
+    genreScrollRef.current?.scrollBy({ left: dir === 'left' ? -200 : 200, behavior: 'smooth' })
+  }
 
   useEffect(() => {
     fetch('/api/tmdb/genres')
@@ -240,20 +245,40 @@ export default function FilmesPage() {
 
         {/* Genre chips */}
         {genres.length > 0 && searchInput.length < 2 && (
-          <div className="flex gap-2 overflow-x-auto pb-2 mb-5" style={{ scrollbarWidth: 'none' }}>
-            {genres.map(g => (
-              <button
-                key={g.id}
-                onClick={() => setActiveGenre(prev => prev === g.id ? null : g.id)}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                  activeGenre === g.id
-                    ? 'bg-primary-600 text-white border-primary-500'
-                    : 'bg-white/5 text-muted-300 border-white/15 hover:border-white/30 hover:text-white'
-                }`}
-              >
-                {g.name}
-              </button>
-            ))}
+          <div className="relative flex items-center mb-5 pb-2">
+            <button
+              onClick={() => scrollGenres('left')}
+              className="flex-shrink-0 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors mr-1"
+              aria-label="Rolar para esquerda"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
+              </svg>
+            </button>
+            <div ref={genreScrollRef} className="flex gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+              {genres.map(g => (
+                <button
+                  key={g.id}
+                  onClick={() => setActiveGenre(prev => prev === g.id ? null : g.id)}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                    activeGenre === g.id
+                      ? 'bg-primary-600 text-white border-primary-500'
+                      : 'bg-white/5 text-muted-300 border-white/15 hover:border-white/30 hover:text-white'
+                  }`}
+                >
+                  {g.name}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => scrollGenres('right')}
+              className="flex-shrink-0 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors ml-1"
+              aria-label="Rolar para direita"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+              </svg>
+            </button>
           </div>
         )}
 
