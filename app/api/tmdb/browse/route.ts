@@ -105,8 +105,6 @@ export async function GET(request: NextRequest) {
           }),
         )
       }
-
-      internalMovies.sort((a, b) => (b.avg_score ?? 0) - (a.avg_score ?? 0))
     }
   }
 
@@ -159,22 +157,45 @@ export async function GET(request: NextRequest) {
   }
   if (posterUpdates.length > 0) await Promise.all(posterUpdates)
 
-  // TMDB results, excluding movies already shown via internal DB
-  if (query.length >= 2) {
-    tmdbData.results?.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0))
+  // Apply genre filter to internalMovies after TMDB fetch.
+  // Uses TMDB discover results as fallback for movies with empty genres in the DB.
+  if (!query && genre) {
+    const genreId = parseInt(genre, 10)
+    const tmdbMatchIds = new Set((tmdbData.results ?? []).map(m => m.id))
+    const filtered = internalMovies.filter(m =>
+      m.genre_ids.includes(genreId) || tmdbMatchIds.has(m.tmdb_id)
+    )
+    internalMovies.length = 0
+    internalMovies.push(...filtered)
   }
 
+  internalMovies.sort((a, b) => (b.avg_score ?? 0) - (a.avg_score ?? 0))
+
+  // When searching: include reviewed movies enriched with internal scores (don't exclude them).
+  // When not searching: exclude reviewed movies since they appear in internalMovies.
   const tmdbMovies: FilmeItem[] = (tmdbData.results ?? [])
-    .filter(m => !reviewedIds.has(m.id))
-    .map(m => ({
-      tmdb_id: m.id,
-      title: typeof m.title === 'string' ? m.title : '',
-      year: m.release_date ? parseInt(m.release_date.slice(0, 4), 10) || null : null,
-      poster_url: m.poster_path ? `${IMAGE_BASE}${m.poster_path}` : null,
-      genre_ids: m.genre_ids ?? [],
-      avg_score: null,
-      review_count: 0,
-    }))
+    .filter(m => query.length >= 2 || !reviewedIds.has(m.id))
+    .map(m => {
+      const scores = query.length >= 2 ? (scoreMap.get(m.id) ?? []) : []
+      return {
+        tmdb_id: m.id,
+        title: typeof m.title === 'string' ? m.title : '',
+        year: m.release_date ? parseInt(m.release_date.slice(0, 4), 10) || null : null,
+        poster_url: m.poster_path ? `${IMAGE_BASE}${m.poster_path}` : null,
+        genre_ids: m.genre_ids ?? [],
+        avg_score: scores.length > 0 ? computeScore(scores) : null,
+        review_count: scores.length,
+      }
+    })
+
+  // When searching, sort reviewed movies first (by score), then the rest (stable TMDB order)
+  if (query.length >= 2) {
+    tmdbMovies.sort((a, b) => {
+      if (a.review_count > 0 && b.review_count === 0) return -1
+      if (a.review_count === 0 && b.review_count > 0) return 1
+      return (b.avg_score ?? 0) - (a.avg_score ?? 0)
+    })
+  }
 
   const movies = [...internalMovies, ...tmdbMovies]
 
