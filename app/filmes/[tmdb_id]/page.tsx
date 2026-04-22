@@ -7,6 +7,7 @@ import Avatar from '../../components/Avatar'
 
 interface MovieDetail {
   tmdb_id: number
+  imdb_id: string | null
   title: string
   year: number | null
   poster_url: string | null
@@ -15,6 +16,11 @@ interface MovieDetail {
   runtime: number | null
   genres: string[]
   director: string | null
+}
+
+interface ExternalRating {
+  source: string
+  value: string
 }
 
 interface ReviewWithProfile {
@@ -47,6 +53,7 @@ async function fetchMovieDetail(tmdbId: string): Promise<MovieDetail | null> {
 
     return {
       tmdb_id: data.id,
+      imdb_id: data.imdb_id ?? null,
       title: data.title ?? '',
       year,
       poster_url: data.poster_path
@@ -62,6 +69,26 @@ async function fetchMovieDetail(tmdbId: string): Promise<MovieDetail | null> {
     }
   } catch {
     return null
+  }
+}
+
+async function fetchOMDBRatings(imdbId: string): Promise<ExternalRating[]> {
+  const apiKey = process.env.OMDB_API_KEY
+  if (!apiKey || apiKey === 'sua_chave_aqui') return []
+  try {
+    const res = await fetch(
+      `https://www.omdbapi.com/?i=${imdbId}&apikey=${apiKey}`,
+      { next: { revalidate: 86400 } },
+    )
+    if (!res.ok) return []
+    const data = await res.json()
+    if (data.Response === 'False') return []
+    return (data.Ratings ?? []).map((r: { Source: string; Value: string }) => ({
+      source: r.Source,
+      value: r.Value,
+    }))
+  } catch {
+    return []
   }
 }
 
@@ -114,6 +141,10 @@ export default async function FilmeDetailPage({
       .order('created_at', { ascending: false })
       .limit(20),
   ])
+
+  const externalRatings = movie?.imdb_id
+    ? await fetchOMDBRatings(movie.imdb_id)
+    : []
 
   const userHasReviewed = user
     ? (await supabase
@@ -229,15 +260,61 @@ export default async function FilmeDetailPage({
         </div>
 
         {/* Body — offset for poster overlap */}
-        <div className="container mx-auto px-4 max-w-5xl mt-12 md:mt-16">
+        <div className="container mx-auto px-4 max-w-5xl mt-4 md:mt-4">
           {/* Breadcrumb */}
           <Link
             href="/filmes"
-            className="inline-flex items-center gap-1.5 text-muted-400 hover:text-white text-sm transition-colors mb-8"
+            className="inline-flex items-center gap-1.5 text-muted-400 hover:text-white text-sm transition-colors mb-1"
           >
             <span>←</span>
             <span>Explorar Filmes</span>
           </Link>
+
+          {/* Community score */}
+          {avgScore !== null && (
+            <div className="flex items-center justify-between mb-8">
+              <div className='flex flex-col md:flex-row gap-3 items-center'>
+                <div
+                  className={`${getScoreColor(avgScore)} text-white font-bold text-3xl px-4 py-2 rounded-xl`}
+                >
+                  {avgScore.toFixed(1)}
+                </div>
+                <div className="flex flex-col items-center md:items-start">
+                  <span className="text-white font-semibold text-lg">Nota da Comunidade</span>
+                  <span className="text-muted-400 text-xs">
+                    {reviews.length} {reviews.length === 1 ? 'avaliação' : 'avaliações'}
+                  </span>
+                </div>
+              </div>             
+                {externalRatings.length > 0 && (
+                  <section className="flex flex-col-reverse md:flex-row items-center gap-3">
+                    <div className="flex flex-wrap gap-3">
+                      {externalRatings.map(rating => {
+                        const label =
+                          rating.source === 'Internet Movie Database' ? 'IMDb' :
+                          rating.source === 'Rotten Tomatoes' ? 'Rotten Tomatoes' :
+                          rating.source === 'Metacritic' ? 'Metacritic' :
+                          rating.source
+                        const accent =
+                          rating.source === 'Internet Movie Database' ? 'border-yellow-500/40 bg-yellow-500/10 text-yellow-300' :
+                          rating.source === 'Rotten Tomatoes' ? 'border-red-500/40 bg-red-500/10 text-red-300' :
+                          rating.source === 'Metacritic' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' :
+                          'border-white/20 bg-white/5 text-white'
+                        return (
+                          <div
+                            key={rating.source}
+                            className={`flex flex-col items-center gap-0.5 border rounded-xl px-4 py-2.5 ${accent}`}
+                          >
+                          <span className="text-xs opacity-70">{label}</span>
+                          <span className="text-base font-bold">{rating.value}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </section>
+              )}
+            </div>
+          )}
 
           {/* Synopsis */}
           <section className="mb-8">
@@ -247,25 +324,13 @@ export default async function FilmeDetailPage({
             </p>
           </section>
 
+          {/* External ratings */}
+          
           {/* Community reviews */}
           <section className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <h2 className="text-white font-semibold text-lg">
-                Avaliações da Comunidade
-              </h2>
-              {avgScore !== null && (
-                <div
-                  className={`${getScoreColor(avgScore)} text-white font-bold text-sm px-2.5 py-0.5 rounded-lg`}
-                >
-                  {avgScore.toFixed(1)}
-                </div>
-              )}
-              {reviews.length > 0 && (
-                <span className="text-muted-400 text-sm">
-                  {reviews.length} {reviews.length === 1 ? 'avaliação' : 'avaliações'}
-                </span>
-              )}
-            </div>
+            <h2 className="text-white font-semibold text-lg mb-4">
+              Avaliações da Comunidade
+            </h2>
 
             {reviews.length === 0 ? (
               <div className="text-center py-12 bg-white/5 border border-white/10 rounded-2xl">
@@ -320,7 +385,7 @@ export default async function FilmeDetailPage({
       </main>
 
       {/* Action button — fixed mobile, inline desktop */}
-      <div className="fixed bottom-0 left-0 right-0 md:static md:bottom-auto border-t border-white/10 bg-bg-dark/95 md:bg-transparent md:border-t-0 backdrop-blur-sm md:backdrop-blur-none px-4 py-4 md:px-0 md:py-0 md:container md:mx-auto md:max-w-5xl md:pb-8">
+      <div className="fixed bottom-0 left-0 right-0 md:static md:bottom-auto border-t border-white/10 bg-bg-dark/95 md:bg-transparent md:border-t-0 backdrop-blur-sm md:backdrop-blur-none px-4 py-4 md:py-0 md:container md:mx-auto md:px-4 md:max-w-5xl md:pb-8">
         {user ? (
           userHasReviewed ? (
             <div className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 font-semibold rounded-xl">
