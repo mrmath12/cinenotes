@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useAuth } from '../../lib/auth-context'
 import { useSupabase } from '../../lib/supabase-provider'
 import { useRouter } from 'next/navigation'
@@ -83,15 +84,21 @@ export default function Header() {
         <nav className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <img
+            <Image
               src="/logo/full/cinenotes-logotipo-full-branco.svg"
               alt="CineNotes"
-              className="hidden md:block h-8 w-auto"
+              width={157}
+              height={32}
+              className="hidden md:block"
+              unoptimized
             />
-            <img
+            <Image
               src="/logo/symbol/cinenotes-logotipo-symbol-branco.svg"
               alt="CineNotes"
-              className="md:hidden h-8 w-auto"
+              width={45}
+              height={32}
+              className="md:hidden"
+              unoptimized
             />
           </Link>
 
@@ -188,10 +195,12 @@ export default function Header() {
           >
             {/* Header do drawer */}
             <div className="flex items-center justify-between mb-8">
-              <img
+              <Image
                 src="/logo/text/cinenotes-logotipo-text-branco.svg"
                 alt="CineNotes"
-                className="h-6 w-auto"
+                width={131}
+                height={24}
+                unoptimized
               />
               <button
                 onClick={closeMobile}
