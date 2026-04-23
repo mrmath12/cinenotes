@@ -4,12 +4,12 @@ import LuckyModal from "./LuckyModal";
 export default function HeroSection() {
   return (
     <section className="text-center max-w-4xl mx-auto">
-      <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+      <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 max-w-[900px]">
         Sua opinião merece mais do que
         <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent"> uma nota</span>
       </h1>
-      <p className="text-xl md:text-2xl text-muted-300 mb-8 leading-relaxed">
-        Avalie cada aspecto — do roteiro à trilha sonora — e veja o que a comunidade está achando.
+      <p className="text-xl md:text-2xl text-muted-300 mb-8 max-w-[800px] leading-relaxed place-self-center">
+        Avalie cada aspecto — do roteiro à trilha sonora — <br/>e veja o que a comunidade está achando.
       </p>
       <div className="flex flex-col gap-4 justify-center w-max place-self-center">
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
