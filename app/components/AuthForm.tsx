@@ -153,16 +153,16 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
   // --- Email confirmation screen ---
   if (registeredEmail) {
     return (
-      <div className="w-full max-w-md mx-auto p-8 bg-white rounded-2xl shadow-lg border border-muted-200 text-center space-y-4">
+      <div className="w-full max-w-md mx-auto p-8 bg-white rounded-2xl shadow-lg border border-muted-300 text-center space-y-4">
         <h2 className="text-2xl font-extrabold text-primary-900">Verifique seu e-mail</h2>
-        <p className="text-muted-700 text-sm leading-relaxed">
+        <p className="text-muted-800 text-sm leading-relaxed">
           Enviamos um link de confirmação para{' '}
           <span className="font-semibold text-primary-900">{registeredEmail}</span>.
           Clique no link para ativar sua conta.
         </p>
         <button
           type="button"
-          className="text-link hover:underline font-medium text-sm"
+          className="text-primary-700 hover:text-primary-900 hover:underline font-semibold text-sm transition-colors"
           onClick={() => {
             setRegisteredEmail(null)
             handleModeChange('login')

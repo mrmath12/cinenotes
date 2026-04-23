@@ -52,6 +52,7 @@ export async function deleteReview(reviewId: string): Promise<void> {
   }
 
   revalidatePath('/avaliacoes')
+  revalidatePath('/minhas-avaliacoes')
   revalidatePath('/perfil')
   revalidatePath('/dashboard')
 }
