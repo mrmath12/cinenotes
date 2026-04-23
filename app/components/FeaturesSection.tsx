@@ -1,6 +1,6 @@
 export default function FeaturesSection() {
   return (
-    <section className="mt-32 grid md:grid-cols-3 gap-8">
+    <section className="mt-20 grid md:grid-cols-3 gap-8">
       <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
         <div className="w-12 h-12 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg flex items-center justify-center mb-4">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,7 +20,7 @@ export default function FeaturesSection() {
         </div>
         <h3 className="text-xl font-semibold text-white mb-2">Comunidade Ativa</h3>
         <p className="text-muted-300">
-          Conecte-se com outros cinéfilos e descubra filmes através das avaliações da comunidade.
+          Veja o que outros estão assistindo e descobrindo. A dica do próximo filme pode estar aqui.
         </p>
       </div>
       <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
@@ -31,7 +31,7 @@ export default function FeaturesSection() {
         </div>
         <h3 className="text-xl font-semibold text-white mb-2">Rápido e Moderno</h3>
         <p className="text-muted-300">
-          Interface moderna e responsiva, construída com as melhores tecnologias web.
+          Interface moderna e intuitiva, tudo onde você espera encontrar.
         </p>
       </div>
     </section>
