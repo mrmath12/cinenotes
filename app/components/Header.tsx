@@ -151,14 +151,14 @@ export default function Header() {
                 <Link href="/filmes" className="text-muted-300 hover:text-white transition-colors">
                   Filmes
                 </Link>
-                <Link href="/login" className="text-muted-300 hover:text-white transition-colors">
-                  Entrar
-                </Link>
                 <Link
                   href="/register"
-                  className="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all"
+                  className="text-muted-300 hover:text-white transition-colors"
                 >
                   Criar conta
+                </Link>
+                <Link href="/login" className="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all">
+                  Entrar
                 </Link>
               </>
             )}
