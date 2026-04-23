@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LuckyModal from "./LuckyModal";
 
 export default function HeroSection() {
   return (
@@ -10,19 +11,22 @@ export default function HeroSection() {
       <p className="text-xl md:text-2xl text-muted-300 mb-8 leading-relaxed">
         Avalie cada aspecto — do roteiro à trilha sonora — e veja o que a comunidade está achando.
       </p>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Link
-          href="/filmes"
-          className="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-primary-600 hover:to-accent-600 transition-all transform hover:scale-105"
-        >
-          Explorar Filmes
-        </Link>
-        <Link
-          href="/register"
-          className="border-2 border-primary-500 text-primary-400 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-500 hover:text-white transition-all"
-        >
-          Começar Agora
-        </Link>
+      <div className="flex flex-col gap-4 justify-center w-max place-self-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            href="/filmes"
+            className="border-2 border-white/20 text-white/80 px-8 py-4 rounded-lg text-lg font-semibold hover:border-white/40 hover:text-white transition-all hover:scale-105"
+          >
+            Explorar Filmes
+          </Link>
+          <Link
+            href="/register"
+            className="border-2 border-primary-500 text-primary-400 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-500 hover:text-white transition-all hover:scale-105"
+          >
+            Começar Agora
+          </Link>
+        </div>
+        <LuckyModal />
       </div>
     </section>
   );
