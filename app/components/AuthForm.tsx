@@ -124,7 +124,6 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              id: user.id,
               full_name: fullName,
               username: normalizedUsername,
               avatar_color: avatarColor,

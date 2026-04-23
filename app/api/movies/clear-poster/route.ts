@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '../../../../lib/supabase-server'
 import { createAdminClient } from '../../../../lib/supabase-admin'
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 })
+  }
+
+  let body: { tmdb_id: unknown }
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Corpo da requisição inválido.' }, { status: 400 })
+  }
+
   const { tmdb_id } = body
 
   if (!tmdb_id || typeof tmdb_id !== 'number') {

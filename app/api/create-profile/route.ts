@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '../../../lib/supabase-server'
 import { createAdminClient } from '../../../lib/supabase-admin'
 
 export const runtime = 'nodejs'
@@ -7,10 +8,17 @@ const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { id, full_name, username, avatar_color } = body ?? {}
+    const supabase = await createClient()
+    const { data: { user }, error: sessionError } = await supabase.auth.getUser()
 
-    if (!id || !full_name || !username || !avatar_color) {
+    if (sessionError || !user) {
+      return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { full_name, username, avatar_color } = body ?? {}
+
+    if (!full_name || !username || !avatar_color) {
       return NextResponse.json({ error: 'Campos obrigatórios ausentes' }, { status: 400 })
     }
 
@@ -22,19 +30,12 @@ export async function POST(request: Request) {
     }
 
     const admin = createAdminClient()
-
-    // Verifica que o ID realmente existe em auth.users antes de inserir
-    const { data: authUser, error: authError } = await admin.auth.admin.getUserById(id)
-    if (authError || !authUser?.user) {
-      return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 401 })
-    }
-
     const normalizedUsername = username.toLowerCase()
 
     const { error } = await admin
       .from('profiles')
       .upsert(
-        { id, full_name, username: normalizedUsername, avatar_color },
+        { id: user.id, full_name, username: normalizedUsername, avatar_color },
         { onConflict: 'id' }
       )
 
