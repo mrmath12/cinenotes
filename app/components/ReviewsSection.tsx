@@ -75,7 +75,7 @@ export default async function ReviewsSection() {
 
   return (
     <section className="mt-20">
-      <h2 className="text-2xl font-bold text-white mb-8 text-center">Avaliações Recentes</h2>
+      <h2 className="text-2xl font-bold text-white mb-8 text-center">Avaliações recentes da <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">comunidade</span></h2>
       <ReviewsCarousel reviews={carouselData} />
     </section>
   )
