@@ -1,5 +1,10 @@
+import type { Metadata } from 'next'
 import Footer from '../components/Footer'
 import ResetPasswordForm from './reset-form'
+
+export const metadata: Metadata = {
+  title: 'Redefinir Senha',
+}
 
 export default function ResetPasswordPage() {
   return (

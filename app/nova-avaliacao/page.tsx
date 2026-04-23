@@ -1,7 +1,12 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '../../lib/supabase-server'
 import Footer from '../components/Footer'
 import NovaAvaliacaoForm from './NovaAvaliacaoForm'
+
+export const metadata: Metadata = {
+  title: 'Nova Avaliação',
+}
 
 export default async function NovaAvaliacaoPage({
   searchParams,
