@@ -147,10 +147,7 @@ export default function Header() {
                 </div>
               </>
             ) : (
-              <>
-                <Link href="/filmes" className="text-muted-300 hover:text-white transition-colors">
-                  Filmes
-                </Link>
+              <>                
                 <Link
                   href="/register"
                   className="text-muted-300 hover:text-white transition-colors"
