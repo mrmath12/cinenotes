@@ -13,7 +13,10 @@ const firaSans = Fira_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "CineNotes - Avalie Filmes com Precisão",
+  title: {
+    default: "CineNotes - Avalie Filmes com Precisão",
+    template: "CineNotes - %s",
+  },
   description: "Plataforma para avaliação de filmes com critérios profissionais. Compartilhe suas opiniões e descubra novos filmes.",
 };
 

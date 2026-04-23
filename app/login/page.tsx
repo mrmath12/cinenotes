@@ -1,5 +1,10 @@
+import type { Metadata } from 'next'
 import AuthForm from '../components/AuthForm'
 import Footer from '../components/Footer'
+
+export const metadata: Metadata = {
+  title: 'Login',
+}
 
 export default async function LoginPage({
   searchParams,

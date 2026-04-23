@@ -113,9 +113,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { tmdb_id } = await params
   const movie = await fetchMovieDetail(tmdb_id)
-  if (!movie) return { title: 'Filme não encontrado — CineNotes' }
+  if (!movie) return { title: 'Filme não encontrado' }
   return {
-    title: `${movie.title} (${movie.year}) — CineNotes`,
+    title: `${movie.title} (${movie.year})`,
     description:
       movie.overview?.slice(0, 155) ?? 'Avaliações da comunidade CineNotes.',
   }

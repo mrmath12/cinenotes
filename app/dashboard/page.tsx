@@ -52,7 +52,7 @@ export default function DashboardPage() {
               <h3 className="text-xl font-semibold text-white mb-4">Minhas Avaliações</h3>
               <p className="text-primary-200 mb-4">Visualize e gerencie todas as suas avaliações de filmes.</p>
               <Link
-                href="/avaliacoes"
+                href="/minhas-avaliacoes"
                 className="inline-block bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition"
               >
                 Ver Avaliações

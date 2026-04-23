@@ -47,7 +47,6 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [dropdownOpen])
 
-  // Fechar menu mobile ao redimensionar para desktop
   useEffect(() => {
     function handleResize() {
       if (window.innerWidth >= 768) setMobileOpen(false)
@@ -115,6 +114,7 @@ export default function Header() {
                 <Link href="/avaliacoes" className="text-muted-300 hover:text-white transition-colors">
                   Avaliações
                 </Link>
+                
 
                 {/* Avatar + Dropdown */}
                 <div className="relative" ref={dropdownRef}>
@@ -127,7 +127,15 @@ export default function Header() {
                   </button>
 
                   {dropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-surface border border-white/10 rounded-xl shadow-xl py-1 z-50">
+                    <div className="absolute right-0 mt-2 w-52 bg-surface border border-white/10 rounded-xl shadow-xl py-1 z-50">
+                      
+                      <Link
+                        href="/minhas-avaliacoes"
+                        className="block px-4 py-2 text-sm text-muted-300 hover:text-white hover:bg-white/5 transition-colors"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Minhas Avaliações
+                      </Link>
                       <Link
                         href="/perfil"
                         className="block px-4 py-2 text-sm text-muted-300 hover:text-white hover:bg-white/5 transition-colors"
@@ -147,7 +155,13 @@ export default function Header() {
                 </div>
               </>
             ) : (
-              <>                
+              <>
+                <Link href="/filmes" className="text-muted-300 hover:text-white transition-colors">
+                  Filmes
+                </Link>
+                <Link href="/avaliacoes" className="text-muted-300 hover:text-white transition-colors">
+                  Avaliações
+                </Link>
                 <Link
                   href="/register"
                   className="text-muted-300 hover:text-white transition-colors"
@@ -168,12 +182,10 @@ export default function Header() {
             aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
           >
             {mobileOpen ? (
-              // X icon
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
-              // Hamburger icon
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
@@ -212,7 +224,7 @@ export default function Header() {
 
             {user ? (
               <>
-                {/* Perfil resumido — área clicável */}
+                {/* Perfil resumido */}
                 <Link
                   href="/perfil"
                   onClick={closeMobile}
@@ -235,6 +247,9 @@ export default function Header() {
                   <Link href="/avaliacoes" onClick={closeMobile} className="text-muted-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-colors">
                     Avaliações
                   </Link>
+                  <Link href="/minhas-avaliacoes" onClick={closeMobile} className="text-muted-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-colors">
+                    Minhas Avaliações
+                  </Link>
                 </nav>
 
                 <button
@@ -249,6 +264,9 @@ export default function Header() {
                 <nav className="flex flex-col space-y-1 flex-1">
                   <Link href="/filmes" onClick={closeMobile} className="text-muted-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-colors">
                     Filmes
+                  </Link>
+                  <Link href="/avaliacoes" onClick={closeMobile} className="text-muted-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-colors">
+                    Avaliações
                   </Link>
                 </nav>
 

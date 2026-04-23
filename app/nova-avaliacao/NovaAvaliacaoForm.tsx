@@ -210,7 +210,7 @@ export default function NovaAvaliacaoForm({ preselectedTmdbId }: { preselectedTm
       }
 
       toast.success('Avaliação salva com sucesso!')
-      router.push('/avaliacoes')
+      router.push('/minhas-avaliacoes')
     } catch {
       toast.error('Erro ao salvar avaliação. Tente novamente.')
     } finally {

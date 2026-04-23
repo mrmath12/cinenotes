@@ -4,16 +4,26 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useAuth } from '../../lib/auth-context'
+import ReviewModal from './ReviewModal'
 
 interface CarouselReview {
   id: string
   tmdb_id: number
   final_score: number
+  score_script: number
+  score_direction: number
+  score_photography: number
+  score_soundtrack: number
+  score_impact: number
+  comment: string | null
   created_at: string
   title: string
   year: number
   poster_url: string | null
   reviewer: string | null
+  full_name: string
+  username: string
+  avatar_color: string
 }
 
 interface ReviewsCarouselProps {
@@ -57,6 +67,7 @@ function scoreColor(score: number): string {
 export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
   const [current, setCurrent] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [selectedReview, setSelectedReview] = useState<CarouselReview | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const { user } = useAuth()
 
@@ -142,7 +153,7 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
               key={review.id}
               className={`transition-transform duration-300 ${visibilityClass(pos)}`}
             >
-              <Link href={`/filmes/${review.tmdb_id}`} className="block h-full">
+              <div onClick={() => setSelectedReview(review)} className="block h-full cursor-pointer">
               <div className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 hover:border-primary-400/60 hover:scale-[1.02] transition-all h-full cursor-pointer">
                 {/* Poster */}
                 <div className="relative w-full aspect-[2/3] bg-white/5">
@@ -183,7 +194,7 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
                   </div>
                 </div>
               </div>
-              </Link>
+              </div>
             </div>
           )
         })}
@@ -226,6 +237,36 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
             </svg>
           </button>
         </div>
+      )}
+
+      {selectedReview && (
+        <ReviewModal
+          review={{
+            id: selectedReview.id,
+            final_score: selectedReview.final_score,
+            score_script: selectedReview.score_script,
+            score_direction: selectedReview.score_direction,
+            score_photography: selectedReview.score_photography,
+            score_soundtrack: selectedReview.score_soundtrack,
+            score_impact: selectedReview.score_impact,
+            comment: selectedReview.comment,
+            created_at: selectedReview.created_at,
+            movies: {
+              tmdb_id: selectedReview.tmdb_id,
+              title: selectedReview.title,
+              year: selectedReview.year,
+              poster_url: selectedReview.poster_url,
+            },
+            profiles: {
+              full_name: selectedReview.full_name,
+              username: selectedReview.username,
+              avatar_color: selectedReview.avatar_color,
+            },
+          }}
+          isOpen={true}
+          onClose={() => setSelectedReview(null)}
+          censorProfile={true}
+        />
       )}
     </div>
   )

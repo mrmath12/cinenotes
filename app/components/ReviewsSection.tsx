@@ -15,15 +15,23 @@ export default async function ReviewsSection() {
       id,
       movie_id,
       final_score,
+      score_script,
+      score_direction,
+      score_photography,
+      score_soundtrack,
+      score_impact,
+      comment,
       created_at,
       movies (
+        tmdb_id,
         title,
         year,
         poster_url
       ),
       profiles (
         username,
-        full_name
+        full_name,
+        avatar_color
       )
     `)
     .order('created_at', { ascending: false })
@@ -37,11 +45,20 @@ export default async function ReviewsSection() {
       tmdb_id: r.movie_id as number,
       movie_id: r.movie_id as number,
       final_score: r.final_score as number,
+      score_script: r.score_script as number,
+      score_direction: r.score_direction as number,
+      score_photography: r.score_photography as number,
+      score_soundtrack: r.score_soundtrack as number,
+      score_impact: r.score_impact as number,
+      comment: (r.comment ?? null) as string | null,
       created_at: r.created_at as string,
       title: (movie?.title ?? 'Filme desconhecido') as string,
       year: (movie?.year ?? 0) as number,
       poster_url: (movie?.poster_url ?? null) as string | null,
       reviewer: (profile?.username ?? profile?.full_name ?? null) as string | null,
+      full_name: (profile?.full_name ?? 'Usuário') as string,
+      username: (profile?.username ?? 'usuario') as string,
+      avatar_color: (profile?.avatar_color ?? '#6366f1') as string,
     }
   })
 

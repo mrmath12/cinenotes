@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Explorar Filmes — CineNotes',
+  title: 'Explorar Filmes',
   description: 'Descubra filmes avaliados pela comunidade com critérios profissionais.',
 }
 
