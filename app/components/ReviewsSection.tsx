@@ -89,6 +89,9 @@ export default async function ReviewsSection() {
   }
 
   const carouselData = rawItems
+    .map(item => ({ item, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ item }) => item)
 
   return (
     <section className="mt-20">
