@@ -265,7 +265,7 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
           }}
           isOpen={true}
           onClose={() => setSelectedReview(null)}
-          censorProfile={true}
+          censorProfile={!user}
         />
       )}
     </div>
