@@ -13,6 +13,7 @@ const firaSans = Fira_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://cinenotes-seven.vercel.app"),
   title: {
     default: "CineNotes - Avalie Filmes com Precisão",
     template: "%s - CineNotes",

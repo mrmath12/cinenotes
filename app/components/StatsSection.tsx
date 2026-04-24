@@ -1,9 +1,9 @@
-import { createClient } from '../../lib/supabase-server'
+import { createAdminClient } from '../../lib/supabase-admin'
 
 export const revalidate = 60
 
 export default async function StatsSection() {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const [moviesResult, usersResult, reviewsResult] = await Promise.all([
     supabase.from('movies').select('*', { count: 'exact', head: true }),
