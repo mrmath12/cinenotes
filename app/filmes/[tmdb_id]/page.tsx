@@ -444,7 +444,7 @@ export default async function FilmeDetailPage({
         </div>
 
         {/* Body */}
-        <div className="container mx-auto px-4 max-w-7xl mt-4 md:mt-4">
+        <div className="container mx-auto px-4 max-w-7xl mt-4 md:mt-4 mb-8">
           {/* Breadcrumb */}
           <Link
             href="/filmes"
