@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { createClient } from '../../../lib/supabase-server'
 import Footer from '../../components/Footer'
 import Avatar from '../../components/Avatar'
+import BackdropImage from '../../components/BackdropImage'
 
 interface MovieDetail {
   tmdb_id: number
@@ -11,7 +12,7 @@ interface MovieDetail {
   title: string
   year: number | null
   poster_url: string | null
-  backdrop_url: string | null
+  backdrop_urls: string[]
   overview: string | null
   runtime: number | null
   genres: string[]
@@ -37,7 +38,7 @@ interface ReviewWithProfile {
 
 async function fetchMovieDetail(tmdbId: string): Promise<MovieDetail | null> {
   const apiKey = process.env.TMDB_API_KEY
-  const url = `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${apiKey}&language=pt-BR&append_to_response=credits`
+  const url = `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${apiKey}&language=pt-BR&append_to_response=credits,images&include_image_language=null,en`
 
   try {
     const res = await fetch(url, { next: { revalidate: 3600 } })
@@ -59,9 +60,12 @@ async function fetchMovieDetail(tmdbId: string): Promise<MovieDetail | null> {
       poster_url: data.poster_path
         ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
         : null,
-      backdrop_url: data.backdrop_path
-        ? `https://image.tmdb.org/t/p/w1280${data.backdrop_path}`
-        : null,
+      backdrop_urls: [
+        ...(data.images?.backdrops ?? []).map(
+          (b: { file_path: string }) => `https://image.tmdb.org/t/p/w1280${b.file_path}`
+        ),
+        ...(data.backdrop_path ? [`https://image.tmdb.org/t/p/w1280${data.backdrop_path}`] : []),
+      ].filter((v, i, arr) => arr.indexOf(v) === i),
       overview: data.overview ?? null,
       runtime: data.runtime ?? null,
       genres: data.genres?.map((g: { name: string }) => g.name) ?? [],
@@ -189,15 +193,8 @@ export default async function FilmeDetailPage({
       <main className="flex-1 pb-24 md:pb-0">
         {/* Hero backdrop */}
         <div className="relative w-full h-64 md:h-80 bg-white/5 overflow-hidden">
-          {movie.backdrop_url && (
-            <Image
-              src={movie.backdrop_url}
-              alt={movie.title}
-              fill
-              className="object-cover"
-              sizes="100vw"
-              priority
-            />
+          {movie.backdrop_urls.length > 0 && (
+            <BackdropImage urls={movie.backdrop_urls} alt={movie.title} />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-bg-dark via-bg-dark/70 to-bg-dark/20" />
 
