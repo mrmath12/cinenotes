@@ -237,35 +237,43 @@ export default function LuckyModal() {
                 ×
               </button>
             </div>
-            <p className="text-muted-400 text-sm mb-2">
-              Escolha filtros opcionais ou sorteie sem filtros.
+            <p className="text-muted-400 text-sm mb-1">
+              Sorteamos um filme aleatório para você assistir.
+            </p>
+            <p className="text-muted-500 text-xs mb-4">
+              Use os filtros abaixo para refinar o sorteio — ou clique em <span className="text-muted-300">Sortear!</span> sem nenhum filtro para uma surpresa completa.
             </p>
 
             <div className="space-y-5">
               {/* Gênero */}
               <div>
-                <label className="block text-muted-300 text-sm font-medium mb-2">Gênero</label>
+                <label className="block text-muted-300 text-sm font-medium mb-1.5">Gênero</label>
                 {genres.length === 0 ? (
                   <div className="flex items-center gap-2 text-muted-400 text-sm">
                     <div className="w-3.5 h-3.5 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
                     Carregando...
                   </div>
                 ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {genres.map(g => (
-                      <button
-                        key={g.id}
-                        type="button"
-                        onClick={() => setGenre(prev => prev === g.id ? null : g.id)}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                          genre === g.id
-                            ? 'bg-primary-600 text-white border-primary-500'
-                            : 'bg-white/5 text-muted-300 border-white/15 hover:border-white/30 hover:text-white'
-                        }`}
-                      >
-                        {g.name}
-                      </button>
-                    ))}
+                  <div className="relative">
+                    <select
+                      value={genre ?? ''}
+                      onChange={e => setGenre(e.target.value ? Number(e.target.value) : null)}
+                      className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 pr-10 text-sm text-white focus:outline-none focus:border-primary-400 transition-colors appearance-none cursor-pointer"
+                    >
+                      <option value="" className="bg-bg-dark text-muted-400">Qualquer gênero</option>
+                      {genres.map(g => (
+                        <option key={g.id} value={g.id} className="bg-bg-dark text-white">
+                          {g.name}
+                        </option>
+                      ))}
+                    </select>
+                    <svg
+                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
                   </div>
                 )}
               </div>
