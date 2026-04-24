@@ -40,6 +40,7 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [usernameError, setUsernameError] = useState<string | null>(null)
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null)
 
   // --- inline username validation (while typing) ---
   const validateUsernameFormat = (value: string): string | null => {
@@ -139,7 +140,7 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
           throw new Error(profileData.error || 'Erro ao criar perfil')
         }
 
-        router.push(redirectTo || '/dashboard')
+        setRegisteredEmail(email)
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro ao autenticar'
@@ -147,6 +148,22 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
     } finally {
       setLoading(false)
     }
+  }
+
+  if (registeredEmail) {
+    return (
+      <div className="w-full max-w-md mx-auto p-8 bg-white rounded-2xl shadow-lg border border-muted-200 text-center">
+        <div className="text-4xl mb-4">📧</div>
+        <h2 className="text-2xl font-extrabold mb-3 text-primary-900">Confirme seu e-mail</h2>
+        <p className="text-muted-600 mb-2">
+          Enviamos um link de confirmação para:
+        </p>
+        <p className="font-semibold text-primary-900 mb-4">{registeredEmail}</p>
+        <p className="text-muted-500 text-sm">
+          Acesse seu e-mail e clique no link para ativar sua conta.
+        </p>
+      </div>
+    )
   }
 
   return (
