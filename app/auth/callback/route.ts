@@ -10,35 +10,41 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      const { data: { user } } = await supabase.auth.getUser()
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
 
-      if (user) {
-        const { id, user_metadata: m } = user
+    if (!exchangeError) {
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
 
-        if (m?.username) {
-          const admin = createAdminClient()
-          const { data: existing } = await admin
-            .from('profiles')
-            .select('id')
-            .eq('id', id)
-            .maybeSingle()
+      if (userError || !user) {
+        console.error('[callback] getUser failed:', userError)
+        return NextResponse.redirect(`${origin}/login?error=confirmation_failed`)
+      }
 
-          if (!existing) {
-            const { error: insertError } = await admin.from('profiles').insert({
+      const { id, email, user_metadata: m } = user
+      const username = m?.username ?? email?.split('@')[0]?.replace(/[^a-z0-9_]/gi, '').toLowerCase()
+
+      if (username) {
+        const admin = createAdminClient()
+        const { error: upsertError } = await admin
+          .from('profiles')
+          .upsert(
+            {
               id,
-              full_name: m.full_name ?? '',
-              username: m.username,
-              avatar_color: m.avatar_color ?? 'bg-blue-500',
-            })
-            if (insertError) console.error('[callback] profile insert error:', insertError)
-          }
-        }
+              full_name: m?.full_name ?? '',
+              username,
+              avatar_color: m?.avatar_color ?? 'bg-blue-500',
+            },
+            { onConflict: 'id' }
+          )
+        if (upsertError) console.error('[callback] profile upsert error:', upsertError)
+      } else {
+        console.error('[callback] no username available for user:', id)
       }
 
       return NextResponse.redirect(`${origin}${next}`)
     }
+
+    console.error('[callback] exchangeCodeForSession error:', exchangeError)
   }
 
   return NextResponse.redirect(`${origin}/login?error=confirmation_failed`)
