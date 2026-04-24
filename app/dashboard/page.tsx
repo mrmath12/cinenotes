@@ -33,7 +33,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gradient-to-br from-bg-dark via-bg-mid to-bg-dark flex flex-col">
       {/* Main Content */}
       <main className="flex-1">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
           <div className="grid grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
             {/* Card - Avaliar Filme */}
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">

@@ -226,7 +226,7 @@ export default function FilmesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg-dark via-bg-mid to-bg-dark flex flex-col">
-      <main className="flex-1 container mx-auto px-4 py-8 max-w-5xl">
+      <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
         <h1 className="text-2xl font-bold text-white mb-6">Explorar Filmes</h1>
 
         {/* Search */}
