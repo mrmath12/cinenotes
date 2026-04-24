@@ -9,6 +9,7 @@ import { createSupabaseBrowserClient } from '../../lib/supabase'
 import { deleteReview } from '../../lib/actions'
 import Avatar from '../components/Avatar'
 import Footer from '../components/Footer'
+import ReviewModal from '../components/ReviewModal'
 
 interface ReviewWithMovie {
   id: string
@@ -99,6 +100,7 @@ export default function AvaliacoesPage() {
   const [fetching, setFetching] = useState(true)
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [selectedReview, setSelectedReview] = useState<ReviewWithMovie | null>(null)
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient()
@@ -135,6 +137,12 @@ export default function AvaliacoesPage() {
     } finally {
       setDeleting(false)
     }
+  }
+
+  async function handleModalDelete(reviewId: string) {
+    await deleteReview(reviewId)
+    setReviews(prev => prev.filter(r => r.id !== reviewId))
+    setSelectedReview(null)
   }
 
   if (fetching) {
@@ -193,7 +201,8 @@ export default function AvaliacoesPage() {
               {sorted.map(review => (
                 <div
                   key={review.id}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-3"
+                  className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-3 cursor-pointer hover:bg-white/8 transition-colors"
+                  onClick={() => setSelectedReview(review)}
                 >
                   {/* Poster */}
                   <div className="flex-shrink-0 w-[60px] h-[90px] relative rounded-lg overflow-hidden bg-white/10">
@@ -256,7 +265,7 @@ export default function AvaliacoesPage() {
 
                       {user && user.id === review.user_id && (
                         <button
-                          onClick={() => setDeleteTarget(review.id)}
+                          onClick={(e) => { e.stopPropagation(); setDeleteTarget(review.id) }}
                           className="flex-shrink-0 text-muted-400 hover:text-red-400 transition-colors p-1 rounded"
                           aria-label="Excluir avaliação"
                         >
@@ -275,6 +284,16 @@ export default function AvaliacoesPage() {
       </main>
 
       <Footer />
+
+      {selectedReview && (
+        <ReviewModal
+          review={selectedReview}
+          isOpen={true}
+          onClose={() => setSelectedReview(null)}
+          showDelete={!!(user && user.id === selectedReview.user_id)}
+          onDelete={handleModalDelete}
+        />
+      )}
 
       {deleteTarget && (
         <DeleteModal
