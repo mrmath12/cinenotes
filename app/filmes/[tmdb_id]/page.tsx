@@ -3,8 +3,15 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { createClient } from '../../../lib/supabase-server'
 import Footer from '../../components/Footer'
-import Avatar from '../../components/Avatar'
 import BackdropImage from '../../components/BackdropImage'
+import FilmeReviewsGrid from '../../components/FilmeReviewsGrid'
+
+interface CastMember {
+  id: number
+  name: string
+  character: string
+  profile_url: string | null
+}
 
 interface MovieDetail {
   tmdb_id: number
@@ -17,6 +24,7 @@ interface MovieDetail {
   runtime: number | null
   genres: string[]
   director: string | null
+  cast: CastMember[]
 }
 
 interface ExternalRating {
@@ -27,6 +35,11 @@ interface ExternalRating {
 interface ReviewWithProfile {
   id: string
   final_score: number
+  score_script: number
+  score_direction: number
+  score_photography: number
+  score_soundtrack: number
+  score_impact: number
   comment: string | null
   created_at: string
   profiles: {
@@ -52,6 +65,17 @@ async function fetchMovieDetail(tmdbId: string): Promise<MovieDetail | null> {
       data.credits?.crew?.find((c: { job: string; name: string }) => c.job === 'Director')
         ?.name ?? null
 
+    const cast: CastMember[] = (data.credits?.cast ?? [])
+      .slice(0, 6)
+      .map((c: { id: number; name: string; character: string; profile_path: string | null }) => ({
+        id: c.id,
+        name: c.name,
+        character: c.character,
+        profile_url: c.profile_path
+          ? `https://image.tmdb.org/t/p/w185${c.profile_path}`
+          : null,
+      }))
+
     return {
       tmdb_id: data.id,
       imdb_id: data.imdb_id ?? null,
@@ -70,6 +94,7 @@ async function fetchMovieDetail(tmdbId: string): Promise<MovieDetail | null> {
       runtime: data.runtime ?? null,
       genres: data.genres?.map((g: { name: string }) => g.name) ?? [],
       director,
+      cast,
     }
   } catch {
     return null
@@ -139,7 +164,7 @@ export default async function FilmeDetailPage({
     supabase
       .from('reviews')
       .select(
-        'id, final_score, comment, created_at, profiles!inner(full_name, username, avatar_color)',
+        'id, final_score, score_script, score_direction, score_photography, score_soundtrack, score_impact, comment, created_at, profiles!inner(full_name, username, avatar_color)',
       )
       .eq('movie_id', Number(tmdb_id))
       .order('created_at', { ascending: false })
@@ -219,36 +244,79 @@ export default async function FilmeDetailPage({
                 )}
               </div>
 
-              {/* Info */}
-              <div className="pb-2 min-w-0">
-                <h1 className="text-white text-xl md:text-3xl font-bold leading-tight line-clamp-2">
-                  {movie.title}
-                </h1>
-                <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                  {movie.year && (
-                    <span className="text-muted-300 text-sm">{movie.year}</span>
+              {/* Info + External Ratings */}
+              <div className="flex-1 flex items-end justify-between gap-4 pb-2 min-w-0">
+                {/* Main info */}
+                <div className="min-w-0">
+                  {avgScore !== null && (
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`${getScoreColor(avgScore)} text-white font-bold text-lg px-3 py-0.5 rounded-lg`}>
+                        {avgScore.toFixed(1)}
+                      </div>
+                      <div className="flex flex-col leading-tight">
+                        <span className="text-white text-sm font-semibold">Nota da Comunidade</span>
+                        <span className="text-muted-400 text-xs">
+                          {reviews.length} {reviews.length === 1 ? 'avaliação' : 'avaliações'}
+                        </span>
+                      </div>
+                    </div>
                   )}
-                  {movie.runtime && (
-                    <span className="text-muted-400 text-sm">
-                      · {formatRuntime(movie.runtime)}
-                    </span>
-                  )}
-                  {movie.director && (
-                    <span className="text-muted-400 text-sm">
-                      · Dir. {movie.director}
-                    </span>
+                  <h1 className="text-white text-xl md:text-3xl font-bold leading-tight line-clamp-2">
+                    {movie.title}
+                  </h1>
+                  <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                    {movie.year && (
+                      <span className="text-muted-300 text-sm">{movie.year}</span>
+                    )}
+                    {movie.runtime && (
+                      <span className="text-muted-400 text-sm">
+                        · {formatRuntime(movie.runtime)}
+                      </span>
+                    )}
+                    {movie.director && (
+                      <span className="text-muted-400 text-sm">
+                        · Dir. {movie.director}
+                      </span>
+                    )}
+                  </div>
+                  {movie.genres.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {movie.genres.map(g => (
+                        <span
+                          key={g}
+                          className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-muted-200 border border-white/15"
+                        >
+                          {g}
+                        </span>
+                      ))}
+                    </div>
                   )}
                 </div>
-                {movie.genres.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {movie.genres.map(g => (
-                      <span
-                        key={g}
-                        className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-muted-200 border border-white/15"
-                      >
-                        {g}
-                      </span>
-                    ))}
+
+                {/* External ratings — stacked on the right */}
+                {externalRatings.length > 0 && (
+                  <div className="hidden md:flex flex-col gap-1.5 flex-shrink-0">
+                    {externalRatings.map(rating => {
+                      const label =
+                        rating.source === 'Internet Movie Database' ? 'IMDb' :
+                        rating.source === 'Rotten Tomatoes' ? 'Rotten Tomatoes' :
+                        rating.source === 'Metacritic' ? 'Metacritic' :
+                        rating.source
+                      const accent =
+                        rating.source === 'Internet Movie Database' ? 'border-yellow-500/40 bg-yellow-500/10 text-yellow-300' :
+                        rating.source === 'Rotten Tomatoes' ? 'border-red-500/40 bg-red-500/10 text-red-300' :
+                        rating.source === 'Metacritic' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' :
+                        'border-white/20 bg-white/5 text-white'
+                      return (
+                        <div
+                          key={rating.source}
+                          className={`flex items-center justify-between gap-3 border rounded-lg px-3 py-1.5 ${accent}`}
+                        >
+                          <span className="text-xs opacity-70">{label}</span>
+                          <span className="text-sm font-bold">{rating.value}</span>
+                        </div>
+                      )
+                    })}
                   </div>
                 )}
               </div>
@@ -267,115 +335,63 @@ export default async function FilmeDetailPage({
             <span>Explorar Filmes</span>
           </Link>
 
-          {/* Scores row: community + external */}
-          {(avgScore !== null || externalRatings.length > 0) && (
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-              {avgScore !== null && (
-                <div className="flex flex-col md:flex-row gap-3 items-center">
-                  <div
-                    className={`${getScoreColor(avgScore)} text-white font-bold text-3xl px-4 py-2 rounded-xl`}
-                  >
-                    {avgScore.toFixed(1)}
-                  </div>
-                  <div className="flex flex-col items-center md:items-start">
-                    <span className="text-white font-semibold text-lg">Nota da Comunidade</span>
-                    <span className="text-muted-400 text-xs">
-                      {reviews.length} {reviews.length === 1 ? 'avaliação' : 'avaliações'}
-                    </span>
-                  </div>
-                </div>
-              )}
+          {/* Synopsis + Cast two-column */}
+          <div className="flex flex-col md:flex-row gap-8 mb-8">
+            {/* Synopsis */}
+            <section className="flex-1 min-w-0">
+              <h2 className="text-white font-semibold text-lg mb-3">Sinopse</h2>
+              <p className="text-muted-300 leading-relaxed">
+                {movie.overview ?? 'Sem sinopse disponível.'}
+              </p>
+            </section>
 
-              {externalRatings.length > 0 && (
-                <div className="flex flex-wrap gap-3">
-                  {externalRatings.map(rating => {
-                    const label =
-                      rating.source === 'Internet Movie Database' ? 'IMDb' :
-                      rating.source === 'Rotten Tomatoes' ? 'Rotten Tomatoes' :
-                      rating.source === 'Metacritic' ? 'Metacritic' :
-                      rating.source
-                    const accent =
-                      rating.source === 'Internet Movie Database' ? 'border-yellow-500/40 bg-yellow-500/10 text-yellow-300' :
-                      rating.source === 'Rotten Tomatoes' ? 'border-red-500/40 bg-red-500/10 text-red-300' :
-                      rating.source === 'Metacritic' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' :
-                      'border-white/20 bg-white/5 text-white'
-                    return (
-                      <div
-                        key={rating.source}
-                        className={`flex flex-col items-center gap-0.5 border rounded-xl px-4 py-2.5 ${accent}`}
-                      >
-                        <span className="text-xs opacity-70">{label}</span>
-                        <span className="text-base font-bold">{rating.value}</span>
+            {/* Cast */}
+            {movie.cast.length > 0 && (
+              <section className="md:w-96 lg:w-[28rem] flex-shrink-0">
+                <h2 className="text-white font-semibold text-lg mb-3">Elenco</h2>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+                  {movie.cast.map(member => (
+                    <div key={member.id} className="flex items-center gap-2 min-w-0">
+                      <div className="w-9 h-9 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
+                        {member.profile_url ? (
+                          <Image
+                            src={member.profile_url}
+                            alt={member.name}
+                            width={36}
+                            height={36}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-muted-400 text-xs font-bold">
+                            {member.name[0]}
+                          </div>
+                        )}
                       </div>
-                    )
-                  })}
+                      <div className="min-w-0">
+                        <p className="text-white text-sm font-medium truncate">{member.name}</p>
+                        <p className="text-muted-400 text-xs truncate">{member.character}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* Synopsis */}
-          <section className="mb-8">
-            <h2 className="text-white font-semibold text-lg mb-3">Sinopse</h2>
-            <p className="text-muted-300 leading-relaxed">
-              {movie.overview ?? 'Sem sinopse disponível.'}
-            </p>
-          </section>
+              </section>
+            )}
+          </div>
 
           {/* Community reviews */}
           <section className="mb-8">
             <h2 className="text-white font-semibold text-lg mb-4">
               Avaliações da Comunidade
             </h2>
-
-            {reviews.length === 0 ? (
-              <div className="text-center py-12 bg-white/5 border border-white/10 rounded-2xl">
-                <p className="text-muted-400">
-                  Nenhuma avaliação ainda. Seja o primeiro!
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {reviews.map(review => (
-                  <div
-                    key={review.id}
-                    className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/8 transition-colors"
-                  >
-                    <div className="flex items-start gap-3">
-                      {review.profiles && (
-                        <Avatar
-                          fullName={review.profiles.full_name}
-                          avatarColor={review.profiles.avatar_color}
-                          size="sm"
-                        />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-white text-sm font-medium truncate">
-                            {review.profiles?.full_name ?? review.profiles?.username ?? 'Usuário'}
-                          </span>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <span
-                              className={`${getScoreColor(review.final_score)} text-white text-xs font-bold px-2 py-0.5 rounded-lg`}
-                            >
-                              {review.final_score.toFixed(1)}
-                            </span>
-                            <span className="text-muted-300 text-xs">
-                              {new Date(review.created_at).toLocaleDateString('pt-BR')}
-                            </span>
-                          </div>
-                        </div>
-                        {review.comment && (
-                          <p className="text-muted-300 text-sm mt-1.5 leading-relaxed">
-                            {review.comment}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <FilmeReviewsGrid
+              reviews={reviews}
+              movie={{
+                tmdb_id: movie.tmdb_id,
+                title: movie.title,
+                year: movie.year,
+                poster_url: movie.poster_url,
+              }}
+            />
           </section>
         </div>
       </main>
