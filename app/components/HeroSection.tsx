@@ -11,7 +11,7 @@ export default function HeroSection() {
       <p className="text-xl md:text-2xl text-muted-300 mb-8 max-w-[800px] leading-relaxed place-self-center">
         Avalie cada aspecto — do roteiro à trilha sonora — <br/>e veja o que a comunidade está achando.
       </p>
-      <div className="flex flex-col gap-4 justify-center w-max place-self-center">
+      <div className="flex flex-col gap-4 items-center mx-auto">
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/filmes"
