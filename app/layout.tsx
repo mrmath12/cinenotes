@@ -17,7 +17,29 @@ export const metadata: Metadata = {
     default: "CineNotes - Avalie Filmes com Precisão",
     template: "%s - CineNotes",
   },
-  description: "Plataforma para avaliação de filmes com critérios profissionais. Compartilhe suas opiniões e descubra novos filmes.",
+  description: "Avalie cada aspecto — do roteiro à trilha sonora — e veja o que a comunidade está achando.",
+  openGraph: {
+    title: "Sua opinião merece mais do que uma nota",
+    description: "Avalie cada aspecto — do roteiro à trilha sonora — e veja o que a comunidade está achando.",
+    url: "https://cinenotes-seven.vercel.app",
+    siteName: "CineNotes",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "CineNotes - Avalie Filmes com Precisão",
+      },
+    ],
+    locale: "pt_BR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sua opinião merece mais do que uma nota",
+    description: "Avalie cada aspecto — do roteiro à trilha sonora — e veja o que a comunidade está achando.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
