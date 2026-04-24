@@ -40,6 +40,7 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [usernameError, setUsernameError] = useState<string | null>(null)
+  const [emailError, setEmailError] = useState<string | null>(null)
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null)
 
   // --- inline username validation (while typing) ---
@@ -56,7 +57,19 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
     setUsernameError(validateUsernameFormat(value))
   }
 
-  // --- uniqueness check on blur ---
+  // --- email uniqueness check on blur (register only) ---
+  const checkEmailAvailable = async (value: string) => {
+    if (!value || !value.includes('@')) return
+    const res = await fetch('/api/check-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: value }),
+    })
+    const data = await res.json()
+    if (data.exists) setEmailError('Este e-mail já está em uso.')
+  }
+
+  // --- username uniqueness check on blur ---
   const checkUsernameAvailable = async (value: string) => {
     const formatError = validateUsernameFormat(value)
     if (formatError || !supabase || value.length < 3) return
@@ -76,6 +89,7 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
     setConfirmPassword('')
     setError(null)
     setUsernameError(null)
+    setEmailError(null)
   }
 
   const handleModeChange = (newMode: 'login' | 'register') => {
@@ -222,15 +236,23 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
         )}
 
         {/* 3. E-mail (ou username no login) */}
-        <input
-          type={formMode === 'login' ? 'text' : 'email'}
-          placeholder={formMode === 'login' ? 'E-mail ou username' : 'E-mail'}
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-          autoComplete={formMode === 'login' ? 'username email' : 'email'}
-          className="w-full px-4 py-3 border border-muted-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-focus transition text-muted-800 placeholder-muted-400"
-        />
+        <div>
+          <input
+            type={formMode === 'login' ? 'text' : 'email'}
+            placeholder={formMode === 'login' ? 'E-mail ou username' : 'E-mail'}
+            value={email}
+            onChange={e => { setEmail(e.target.value); if (emailError) setEmailError(null) }}
+            onBlur={formMode === 'register' ? e => checkEmailAvailable(e.target.value) : undefined}
+            required
+            autoComplete={formMode === 'login' ? 'username email' : 'email'}
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus transition text-muted-800 placeholder-muted-400 ${
+              emailError ? 'border-danger' : 'border-muted-300'
+            }`}
+          />
+          {emailError && (
+            <p className="mt-1 text-xs text-danger">{emailError}</p>
+          )}
+        </div>
 
         {/* 4. Senha */}
         <input
@@ -258,7 +280,7 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
 
         <button
           type="submit"
-          disabled={loading || (formMode === 'register' && !!usernameError)}
+          disabled={loading || (formMode === 'register' && (!!usernameError || !!emailError))}
           className="w-full bg-primary-900 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition disabled:opacity-60"
         >
           {loading ? 'Carregando...' : formMode === 'login' ? 'Entrar' : 'Cadastrar'}
