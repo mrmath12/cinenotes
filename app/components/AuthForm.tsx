@@ -40,7 +40,6 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [usernameError, setUsernameError] = useState<string | null>(null)
-  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null)
 
   // --- inline username validation (while typing) ---
   const validateUsernameFormat = (value: string): string | null => {
@@ -117,30 +116,30 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
         const avatarColor = getRandomAvatarColor()
         const normalizedUsername = username.toLowerCase()
 
-        const user = await signUp(email, password, { full_name: fullName })
+        await signUp(email, password, {
+          full_name: fullName,
+          username: normalizedUsername,
+          avatar_color: avatarColor,
+        })
 
-        if (user) {
-          const res = await fetch('/api/create-profile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              full_name: fullName,
-              username: normalizedUsername,
-              avatar_color: avatarColor,
-            }),
-          })
-          if (!res.ok) {
-            const body = await res.json().catch(() => ({}))
-            if (body?.error?.includes('username') || body?.error?.includes('Username')) {
-              setError('Este nome de usuário já está em uso.')
-              setLoading(false)
-              return
-            }
-          }
+        // Tenta criar o perfil imediatamente (funciona quando confirmação de e-mail está desativada).
+        // Se retornar 401, o perfil será criado via /auth/callback ao confirmar o e-mail.
+        const profileRes = await fetch('/api/create-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            full_name: fullName,
+            username: normalizedUsername,
+            avatar_color: avatarColor,
+          }),
+        })
+
+        if (!profileRes.ok && profileRes.status !== 401) {
+          const profileData = await profileRes.json()
+          throw new Error(profileData.error || 'Erro ao criar perfil')
         }
 
-        // Show email confirmation screen instead of redirecting
-        setRegisteredEmail(email)
+        router.push(redirectTo || '/dashboard')
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro ao autenticar'
@@ -148,30 +147,6 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
     } finally {
       setLoading(false)
     }
-  }
-
-  // --- Email confirmation screen ---
-  if (registeredEmail) {
-    return (
-      <div className="w-full max-w-md mx-auto p-8 bg-white rounded-2xl shadow-lg border border-muted-300 text-center space-y-4">
-        <h2 className="text-2xl font-extrabold text-primary-900">Verifique seu e-mail</h2>
-        <p className="text-muted-800 text-sm leading-relaxed">
-          Enviamos um link de confirmação para{' '}
-          <span className="font-semibold text-primary-900">{registeredEmail}</span>.
-          Clique no link para ativar sua conta.
-        </p>
-        <button
-          type="button"
-          className="text-primary-700 hover:text-primary-900 hover:underline font-semibold text-sm transition-colors"
-          onClick={() => {
-            setRegisteredEmail(null)
-            handleModeChange('login')
-          }}
-        >
-          Voltar para login
-        </button>
-      </div>
-    )
   }
 
   return (
