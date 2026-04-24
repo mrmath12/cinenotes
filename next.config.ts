@@ -25,7 +25,7 @@ const securityHeaders = [
       `default-src 'self'`,
       `script-src 'self' 'unsafe-inline' 'unsafe-eval'`,
       `style-src 'self' 'unsafe-inline'`,
-      `img-src 'self' data: blob: https://image.tmdb.org`,
+      `img-src 'self' data: blob: https://image.tmdb.org https://img.youtube.com`,
       `font-src 'self'`,
       `connect-src 'self' https://${SUPABASE_HOST} https://api.themoviedb.org`,
       `frame-ancestors 'none'`,

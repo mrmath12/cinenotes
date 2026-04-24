@@ -13,10 +13,37 @@ interface CastMember {
   profile_url: string | null
 }
 
+interface Trailer {
+  key: string
+  name: string
+  type: string
+}
+
+interface WatchProvider {
+  provider_id: number
+  provider_name: string
+  logo_url: string
+}
+
+interface WatchProviders {
+  link: string
+  flatrate: WatchProvider[]
+  rent: WatchProvider[]
+  buy: WatchProvider[]
+}
+
+interface RelatedMovie {
+  id: number
+  title: string
+  poster_url: string | null
+  year: number | null
+}
+
 interface MovieDetail {
   tmdb_id: number
   imdb_id: string | null
   title: string
+  tagline: string | null
   year: number | null
   poster_url: string | null
   backdrop_urls: string[]
@@ -25,6 +52,10 @@ interface MovieDetail {
   genres: string[]
   director: string | null
   cast: CastMember[]
+  certification: string | null
+  trailers: Trailer[]
+  watchProviders: WatchProviders | null
+  recommendations: RelatedMovie[]
 }
 
 interface ExternalRating {
@@ -51,7 +82,7 @@ interface ReviewWithProfile {
 
 async function fetchMovieDetail(tmdbId: string): Promise<MovieDetail | null> {
   const apiKey = process.env.TMDB_API_KEY
-  const url = `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${apiKey}&language=pt-BR&append_to_response=credits,images&include_image_language=null,en`
+  const url = `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${apiKey}&language=pt-BR&append_to_response=credits,images,videos,watch/providers,release_dates,recommendations&include_image_language=null,en`
 
   try {
     const res = await fetch(url, { next: { revalidate: 3600 } })
@@ -76,17 +107,72 @@ async function fetchMovieDetail(tmdbId: string): Promise<MovieDetail | null> {
           : null,
       }))
 
+    const brRelease = (data.release_dates?.results ?? []).find(
+      (r: { iso_3166_1: string }) => r.iso_3166_1 === 'BR',
+    )
+    const certification: string | null =
+      brRelease?.release_dates?.find(
+        (rd: { certification: string }) => rd.certification,
+      )?.certification ?? null
+
+    const trailers: Trailer[] = (data.videos?.results ?? [])
+      .filter(
+        (v: { site: string; type: string }) =>
+          v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'),
+      )
+      .slice(0, 4)
+      .map((v: { key: string; name: string; type: string }) => ({
+        key: v.key,
+        name: v.name,
+        type: v.type,
+      }))
+
+    const brProviders = data['watch/providers']?.results?.BR ?? null
+    const mapProviders = (list: { provider_id: number; provider_name: string; logo_path: string }[]) =>
+      (list ?? []).map(p => ({
+        provider_id: p.provider_id,
+        provider_name: p.provider_name,
+        logo_url: `https://image.tmdb.org/t/p/w45${p.logo_path}`,
+      }))
+    const watchProviders: WatchProviders | null = brProviders
+      ? {
+          link: brProviders.link ?? '',
+          flatrate: mapProviders(brProviders.flatrate),
+          rent: mapProviders(brProviders.rent),
+          buy: mapProviders(brProviders.buy),
+        }
+      : null
+
+    const recommendations: RelatedMovie[] = (data.recommendations?.results ?? [])
+      .slice(0, 8)
+      .map(
+        (r: {
+          id: number
+          title: string
+          poster_path: string | null
+          release_date?: string
+        }) => ({
+          id: r.id,
+          title: r.title,
+          poster_url: r.poster_path
+            ? `https://image.tmdb.org/t/p/w342${r.poster_path}`
+            : null,
+          year: r.release_date ? parseInt(r.release_date.slice(0, 4), 10) || null : null,
+        }),
+      )
+
     return {
       tmdb_id: data.id,
       imdb_id: data.imdb_id ?? null,
       title: data.title ?? '',
+      tagline: data.tagline || null,
       year,
       poster_url: data.poster_path
         ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
         : null,
       backdrop_urls: [
         ...(data.images?.backdrops ?? []).map(
-          (b: { file_path: string }) => `https://image.tmdb.org/t/p/w1280${b.file_path}`
+          (b: { file_path: string }) => `https://image.tmdb.org/t/p/w1280${b.file_path}`,
         ),
         ...(data.backdrop_path ? [`https://image.tmdb.org/t/p/w1280${data.backdrop_path}`] : []),
       ].filter((v, i, arr) => arr.indexOf(v) === i),
@@ -95,6 +181,10 @@ async function fetchMovieDetail(tmdbId: string): Promise<MovieDetail | null> {
       genres: data.genres?.map((g: { name: string }) => g.name) ?? [],
       director,
       cast,
+      certification,
+      trailers,
+      watchProviders,
+      recommendations,
     }
   } catch {
     return null
@@ -133,6 +223,16 @@ function getScoreColor(score: number): string {
   if (score >= 7) return 'bg-emerald-600'
   if (score >= 5) return 'bg-amber-500'
   return 'bg-red-600'
+}
+
+function getCertificationStyle(cert: string): string {
+  if (cert === 'L' || cert === 'Livre') return 'bg-green-600/20 border-green-500/40 text-green-300'
+  if (cert === '10') return 'bg-blue-600/20 border-blue-500/40 text-blue-300'
+  if (cert === '12') return 'bg-sky-600/20 border-sky-500/40 text-sky-300'
+  if (cert === '14') return 'bg-amber-600/20 border-amber-500/40 text-amber-300'
+  if (cert === '16') return 'bg-orange-600/20 border-orange-500/40 text-orange-300'
+  if (cert === '18') return 'bg-red-600/20 border-red-500/40 text-red-300'
+  return 'bg-white/10 border-white/20 text-muted-300'
 }
 
 export async function generateMetadata({
@@ -176,12 +276,13 @@ export default async function FilmeDetailPage({
     : []
 
   const userHasReviewed = user
-    ? (await supabase
-        .from('reviews')
-        .select('id')
-        .eq('movie_id', Number(tmdb_id))
-        .eq('user_id', user.id)
-        .maybeSingle()
+    ? (
+        await supabase
+          .from('reviews')
+          .select('id')
+          .eq('movie_id', Number(tmdb_id))
+          .eq('user_id', user.id)
+          .maybeSingle()
       ).data !== null
     : false
 
@@ -213,9 +314,15 @@ export default async function FilmeDetailPage({
         )
       : null
 
+  const hasWatchProviders =
+    movie.watchProviders &&
+    (movie.watchProviders.flatrate.length > 0 ||
+      movie.watchProviders.rent.length > 0 ||
+      movie.watchProviders.buy.length > 0)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg-dark via-bg-mid to-bg-dark flex flex-col">
-      <main className="flex-1 pb-24 md:pb-0">
+      <main className="flex-1">
         {/* Hero backdrop */}
         <div className="relative w-full h-64 md:h-80 bg-white/5 overflow-hidden">
           {movie.backdrop_urls.length > 0 && (
@@ -264,6 +371,11 @@ export default async function FilmeDetailPage({
                   <h1 className="text-white text-xl md:text-3xl font-bold leading-tight line-clamp-2">
                     {movie.title}
                   </h1>
+                  {movie.tagline && (
+                    <p className="text-muted-300 text-sm italic mt-0.5 line-clamp-1">
+                      {movie.tagline}
+                    </p>
+                  )}
                   <div className="flex flex-wrap items-center gap-2 mt-1.5">
                     {movie.year && (
                       <span className="text-muted-300 text-sm">{movie.year}</span>
@@ -276,6 +388,13 @@ export default async function FilmeDetailPage({
                     {movie.director && (
                       <span className="text-muted-400 text-sm">
                         · Dir. {movie.director}
+                      </span>
+                    )}
+                    {movie.certification && (
+                      <span
+                        className={`text-xs font-semibold px-1.5 py-0.5 rounded border ${getCertificationStyle(movie.certification)}`}
+                      >
+                        {movie.certification === 'L' ? 'Livre' : `${movie.certification} anos`}
                       </span>
                     )}
                   </div>
@@ -293,7 +412,7 @@ export default async function FilmeDetailPage({
                   )}
                 </div>
 
-                {/* External ratings — stacked on the right */}
+                {/* External ratings */}
                 {externalRatings.length > 0 && (
                   <div className="hidden md:flex flex-col gap-1.5 flex-shrink-0">
                     {externalRatings.map(rating => {
@@ -324,12 +443,12 @@ export default async function FilmeDetailPage({
           </div>
         </div>
 
-        {/* Body — offset for poster overlap */}
+        {/* Body */}
         <div className="container mx-auto px-4 max-w-7xl mt-4 md:mt-4">
           {/* Breadcrumb */}
           <Link
             href="/filmes"
-            className="inline-flex items-center gap-1.5 text-muted-400 hover:text-white text-sm transition-colors mb-1"
+            className="inline-flex items-center gap-1.5 text-muted-400 hover:text-white text-sm transition-colors mb-4"
           >
             <span>←</span>
             <span>Explorar Filmes</span>
@@ -337,7 +456,6 @@ export default async function FilmeDetailPage({
 
           {/* Synopsis + Cast two-column */}
           <div className="flex flex-col md:flex-row gap-8 mb-8">
-            {/* Synopsis */}
             <section className="flex-1 min-w-0">
               <h2 className="text-white font-semibold text-lg mb-3">Sinopse</h2>
               <p className="text-muted-300 leading-relaxed">
@@ -345,7 +463,6 @@ export default async function FilmeDetailPage({
               </p>
             </section>
 
-            {/* Cast */}
             {movie.cast.length > 0 && (
               <section className="md:w-96 lg:w-[28rem] flex-shrink-0">
                 <h2 className="text-white font-semibold text-lg mb-3">Elenco</h2>
@@ -378,6 +495,94 @@ export default async function FilmeDetailPage({
             )}
           </div>
 
+          {/* Onde Assistir */}
+          {hasWatchProviders && (
+            <section className="mb-8">
+              <h2 className="text-white font-semibold text-lg mb-3">Onde Assistir</h2>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+                {movie.watchProviders!.flatrate.length > 0 && (
+                  <>
+                    <span className="text-muted-400 text-xs flex-shrink-0">Streaming</span>
+                    {movie.watchProviders!.flatrate.map(p => (
+                      <a key={p.provider_id} href={movie.watchProviders!.link} target="_blank" rel="noopener noreferrer" title={p.provider_name}>
+                        <Image src={p.logo_url} alt={p.provider_name} width={40} height={40} className="rounded-lg object-cover ring-1 ring-white/10 hover:ring-white/40 transition-all" />
+                      </a>
+                    ))}
+                    {(movie.watchProviders!.rent.length > 0 || movie.watchProviders!.buy.length > 0) && (
+                      <span className="w-px h-8 bg-white/15 flex-shrink-0" />
+                    )}
+                  </>
+                )}
+                {movie.watchProviders!.rent.length > 0 && (
+                  <>
+                    <span className="text-muted-400 text-xs flex-shrink-0">Alugar</span>
+                    {movie.watchProviders!.rent.map(p => (
+                      <a key={p.provider_id} href={movie.watchProviders!.link} target="_blank" rel="noopener noreferrer" title={p.provider_name}>
+                        <Image src={p.logo_url} alt={p.provider_name} width={40} height={40} className="rounded-lg object-cover ring-1 ring-white/10 hover:ring-white/40 transition-all opacity-80" />
+                      </a>
+                    ))}
+                    {movie.watchProviders!.buy.length > 0 && (
+                      <span className="w-px h-8 bg-white/15 flex-shrink-0" />
+                    )}
+                  </>
+                )}
+                {movie.watchProviders!.buy.length > 0 && (
+                  <>
+                    <span className="text-muted-400 text-xs flex-shrink-0">Comprar</span>
+                    {movie.watchProviders!.buy.map(p => (
+                      <a key={p.provider_id} href={movie.watchProviders!.link} target="_blank" rel="noopener noreferrer" title={p.provider_name}>
+                        <Image src={p.logo_url} alt={p.provider_name} width={40} height={40} className="rounded-lg object-cover ring-1 ring-white/10 hover:ring-white/40 transition-all opacity-80" />
+                      </a>
+                    ))}
+                  </>
+                )}
+              </div>
+              <p className="text-muted-500 text-xs mt-2">Disponibilidade no Brasil via JustWatch</p>
+            </section>
+          )}
+
+          {/* Trailers */}
+          {movie.trailers.length > 0 && (
+            <section className="mb-8">
+              <h2 className="text-white font-semibold text-lg mb-3">Trailers</h2>
+              <div className="flex gap-3 overflow-x-auto pb-2">
+                {movie.trailers.map(trailer => (
+                  <a
+                    key={trailer.key}
+                    href={`https://www.youtube.com/watch?v=${trailer.key}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex-shrink-0 w-64 md:w-72 rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-white/25 transition-all"
+                  >
+                    <div className="relative w-full aspect-video bg-black">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`https://img.youtube.com/vi/${trailer.key}/hqdefault.jpg`}
+                        alt={trailer.name}
+                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-black/60 flex items-center justify-center group-hover:bg-black/80 transition-colors">
+                          <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      </div>
+                      {trailer.type === 'Teaser' && (
+                        <span className="absolute top-2 left-2 text-xs px-1.5 py-0.5 rounded bg-black/70 text-muted-300">
+                          Teaser
+                        </span>
+                      )}
+                    </div>
+                    <div className="px-3 py-2">
+                      <p className="text-white text-sm font-medium line-clamp-1">{trailer.name}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Community reviews */}
           <section className="mb-8">
             <h2 className="text-white font-semibold text-lg mb-4">
@@ -393,11 +598,12 @@ export default async function FilmeDetailPage({
               }}
             />
           </section>
+
         </div>
       </main>
 
       {/* Action button — fixed mobile, inline desktop */}
-      <div className="fixed bottom-0 left-0 right-0 md:static md:bottom-auto border-t border-white/10 bg-bg-dark/95 md:bg-transparent md:border-t-0 backdrop-blur-sm md:backdrop-blur-none px-4 py-4 md:py-0 md:container md:mx-auto md:px-4 md:max-w-7xl md:pb-8">
+      <div className="fixed bottom-0 left-0 right-0 z-50 md:static md:bottom-auto md:z-auto border-t border-white/10 bg-bg-dark/95 md:bg-transparent md:border-t-0 backdrop-blur-sm md:backdrop-blur-none px-4 py-4 md:py-0 md:container md:mx-auto md:px-4 md:max-w-7xl md:pb-8">
         {user ? (
           userHasReviewed ? (
             <div className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 font-semibold rounded-xl">
@@ -421,9 +627,45 @@ export default async function FilmeDetailPage({
         )}
       </div>
 
-      <div className="pb-20 md:pb-0">
-        <Footer />
-      </div>
+      {/* Filmes Relacionados */}
+      {movie.recommendations.length > 0 && (
+        <div className="container mx-auto px-4 max-w-7xl pb-8 pt-4">
+          <h2 className="text-white font-semibold text-lg mb-4">Filmes Relacionados</h2>
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+            {movie.recommendations.map(related => (
+              <Link
+                key={related.id}
+                href={`/filmes/${related.id}`}
+                className="group flex flex-col gap-1.5"
+              >
+                <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-white/10 ring-1 ring-white/10 group-hover:ring-white/30 transition-all">
+                  {related.poster_url ? (
+                    <Image
+                      src={related.poster_url}
+                      alt={related.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 25vw, (max-width: 768px) 17vw, 13vw"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-500 text-xs text-center px-1">
+                      {related.title}
+                    </div>
+                  )}
+                </div>
+                <p className="text-muted-300 text-xs leading-tight line-clamp-2 group-hover:text-white transition-colors">
+                  {related.title}
+                </p>
+                {related.year && (
+                  <p className="text-muted-500 text-xs">{related.year}</p>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <Footer />
     </div>
   )
 }
