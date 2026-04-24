@@ -363,7 +363,7 @@ export default async function FilmeDetailPage({
                             >
                               {review.final_score.toFixed(1)}
                             </span>
-                            <span className="text-muted-500 text-xs">
+                            <span className="text-muted-300 text-xs">
                               {new Date(review.created_at).toLocaleDateString('pt-BR')}
                             </span>
                           </div>

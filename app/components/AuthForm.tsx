@@ -159,7 +159,7 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
           Enviamos um link de confirmação para:
         </p>
         <p className="font-semibold text-primary-900 mb-4">{registeredEmail}</p>
-        <p className="text-muted-500 text-sm">
+        <p className="text-muted-600 text-sm">
           Acesse seu e-mail e clique no link para ativar sua conta.
         </p>
       </div>
