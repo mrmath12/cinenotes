@@ -21,7 +21,7 @@ function mapAuthError(message: string): string {
     return 'Confirme seu e-mail antes de fazer login.'
   }
   if (message.includes('Invalid login credentials')) {
-    return 'E-mail ou senha incorretos.'
+    return 'E-mail/username ou senha incorretos.'
   }
   return message
 }
@@ -111,7 +111,21 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
 
     try {
       if (formMode === 'login') {
-        await signIn(email, password)
+        let loginEmail = email.trim()
+
+        if (!loginEmail.includes('@')) {
+          if (!supabase) throw new Error('Supabase não configurado')
+          const { data: resolvedEmail, error: rpcError } = await supabase
+            .rpc('get_email_by_username', { p_username: loginEmail.toLowerCase() })
+          if (rpcError || !resolvedEmail) {
+            setError('E-mail/username ou senha incorretos.')
+            setLoading(false)
+            return
+          }
+          loginEmail = resolvedEmail
+        }
+
+        await signIn(loginEmail, password)
         router.push(redirectTo || '/dashboard')
       } else {
         const avatarColor = getRandomAvatarColor()
@@ -207,13 +221,14 @@ export default function AuthForm({ mode = 'login', redirectTo }: AuthFormProps) 
           </>
         )}
 
-        {/* 3. E-mail */}
+        {/* 3. E-mail (ou username no login) */}
         <input
-          type="email"
-          placeholder="E-mail"
+          type={formMode === 'login' ? 'text' : 'email'}
+          placeholder={formMode === 'login' ? 'E-mail ou username' : 'E-mail'}
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
+          autoComplete={formMode === 'login' ? 'username email' : 'email'}
           className="w-full px-4 py-3 border border-muted-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-focus transition text-muted-800 placeholder-muted-400"
         />
 
