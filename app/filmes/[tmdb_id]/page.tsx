@@ -199,7 +199,7 @@ export default async function FilmeDetailPage({
           <div className="absolute inset-0 bg-gradient-to-t from-bg-dark via-bg-dark/70 to-bg-dark/20" />
 
           {/* Hero content */}
-          <div className="absolute bottom-0 left-0 right-0 container mx-auto px-4 max-w-5xl pb-6">
+          <div className="absolute bottom-0 left-0 right-0 container mx-auto px-4 max-w-7xl pb-6">
             <div className="flex gap-4 items-end">
               {/* Poster */}
               <div className="relative flex-shrink-0 w-[100px] h-[150px] md:w-[150px] md:h-[225px] rounded-xl overflow-hidden bg-white/10 shadow-2xl -mb-8 md:-mb-12">
@@ -257,7 +257,7 @@ export default async function FilmeDetailPage({
         </div>
 
         {/* Body — offset for poster overlap */}
-        <div className="container mx-auto px-4 max-w-5xl mt-4 md:mt-4">
+        <div className="container mx-auto px-4 max-w-7xl mt-4 md:mt-4">
           {/* Breadcrumb */}
           <Link
             href="/filmes"
@@ -381,7 +381,7 @@ export default async function FilmeDetailPage({
       </main>
 
       {/* Action button — fixed mobile, inline desktop */}
-      <div className="fixed bottom-0 left-0 right-0 md:static md:bottom-auto border-t border-white/10 bg-bg-dark/95 md:bg-transparent md:border-t-0 backdrop-blur-sm md:backdrop-blur-none px-4 py-4 md:py-0 md:container md:mx-auto md:px-4 md:max-w-5xl md:pb-8">
+      <div className="fixed bottom-0 left-0 right-0 md:static md:bottom-auto border-t border-white/10 bg-bg-dark/95 md:bg-transparent md:border-t-0 backdrop-blur-sm md:backdrop-blur-none px-4 py-4 md:py-0 md:container md:mx-auto md:px-4 md:max-w-7xl md:pb-8">
         {user ? (
           userHasReviewed ? (
             <div className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 font-semibold rounded-xl">
