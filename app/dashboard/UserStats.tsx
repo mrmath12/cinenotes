@@ -40,7 +40,7 @@ export default function UserStats({ reviews, headerActions }: { reviews: Dashboa
     return (
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-white">Suas Estatísticas</h2>
+          <h2 className="text-2xl font-semibold text-white">Suas Estatísticas</h2>
           {headerActions}
         </div>
         <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
@@ -81,7 +81,7 @@ export default function UserStats({ reviews, headerActions }: { reviews: Dashboa
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-white">Suas Estatísticas</h2>
+        <h2 className="text-2xl font-semibold text-white">Suas Estatísticas</h2>
         {headerActions}
       </div>
 
