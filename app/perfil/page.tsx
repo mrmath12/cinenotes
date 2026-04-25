@@ -279,26 +279,6 @@ export default function PerfilPage() {
                 {usernameError && <p className="text-red-400 text-xs mt-1">{usernameError}</p>}
               </div>
 
-              {/* Color picker */}
-              <div>
-                <label className="block text-muted-300 text-sm mb-2">Cor do avatar</label>
-                <div className="flex gap-2">
-                  {AVATAR_COLORS.map(color => (
-                    <button
-                      key={color}
-                      onClick={() => setEditColor(color)}
-                      style={{ backgroundColor: color }}
-                      className={`w-8 h-8 rounded-full transition-transform ${
-                        editColor === color
-                          ? 'ring-2 ring-white ring-offset-2 ring-offset-bg-dark scale-110'
-                          : 'hover:scale-105'
-                      }`}
-                      aria-label={`Cor ${color}`}
-                    />
-                  ))}
-                </div>
-              </div>
-
               {/* Actions */}
               <div className="flex justify-end gap-3 pt-1">
                 <button
