@@ -5,11 +5,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useAuth } from '../../lib/auth-context'
-import { createSupabaseBrowserClient } from '../../lib/supabase'
-import { deleteReview } from '../../lib/actions'
+import { deleteReview, fetchPublicReviews } from '../../lib/actions'
 import Avatar from '../components/Avatar'
 import Footer from '../components/Footer'
 import ReviewModal from '../components/ReviewModal'
+import NovaAvaliacaoModal from '../components/NovaAvaliacaoModal'
 
 interface ReviewWithMovie {
   id: string
@@ -101,25 +101,13 @@ export default function AvaliacoesPage() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [selectedReview, setSelectedReview] = useState<ReviewWithMovie | null>(null)
+  const [avaliacaoModalOpen, setAvaliacaoModalOpen] = useState(false)
 
   useEffect(() => {
-    const supabase = createSupabaseBrowserClient()
-    if (!supabase) return
-
-    supabase
-      .from('reviews')
-      .select(`
-        id, user_id, final_score, score_script, score_direction,
-        score_photography, score_soundtrack, score_impact,
-        comment, created_at,
-        movies!inner(tmdb_id, title, year, poster_url),
-        profiles!inner(full_name, username, avatar_color)
-      `)
-      .order('created_at', { ascending: false })
-      .then(({ data }) => {
-        setReviews((data as unknown as ReviewWithMovie[]) ?? [])
-        setFetching(false)
-      })
+    fetchPublicReviews().then((data) => {
+      setReviews(data as unknown as ReviewWithMovie[])
+      setFetching(false)
+    })
   }, [])
 
   const sorted = sortReviews(reviews, sortMode)
@@ -162,57 +150,74 @@ export default function AvaliacoesPage() {
           <div className="text-center py-20">
             <p className="text-muted-300 text-lg mb-6">Nenhuma avaliação ainda.</p>
             {user && (
-              <Link
-                href="/nova-avaliacao"
-                className="inline-block bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-3 rounded-xl hover:from-primary-600 hover:to-accent-600 transition-all font-medium"
+              <button
+                onClick={() => setAvaliacaoModalOpen(true)}
+                className="inline-block bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-3 rounded-xl hover:from-primary-600 hover:to-accent-600 transition-all font-medium cursor-pointer"
               >
                 Seja o primeiro a avaliar
-              </Link>
+              </button>
             )}
           </div>
         ) : (
           <>
-            {/* Sort controls */}
-            <div className="flex gap-3 mb-6">
-              <button
-                onClick={() => setSortMode((prev) => (prev === 'date_desc' ? 'date_asc' : 'date_desc'))}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  sortMode === 'date_desc' || sortMode === 'date_asc'
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
-                }`}
-              >
-                Por Data {sortMode === 'date_desc' ? '↓' : sortMode === 'date_asc' ? '↑' : ''}
-              </button>
-              <button
-                onClick={() => setSortMode((prev) => (prev === 'score_desc' ? 'score_asc' : 'score_desc'))}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  sortMode === 'score_desc' || sortMode === 'score_asc'
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
-                }`}
-              >
-                Por Nota {sortMode === 'score_desc' ? '↓' : sortMode === 'score_asc' ? '↑' : ''}
-              </button>
+            {/* Sort controls + action buttons */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setSortMode((prev) => (prev === 'date_desc' ? 'date_asc' : 'date_desc'))}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    sortMode === 'date_desc' || sortMode === 'date_asc'
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
+                  }`}
+                >
+                  Por Data {sortMode === 'date_desc' ? '↓' : sortMode === 'date_asc' ? '↑' : ''}
+                </button>
+                <button
+                  onClick={() => setSortMode((prev) => (prev === 'score_desc' ? 'score_asc' : 'score_desc'))}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    sortMode === 'score_desc' || sortMode === 'score_asc'
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
+                  }`}
+                >
+                  Por Nota {sortMode === 'score_desc' ? '↓' : sortMode === 'score_asc' ? '↑' : ''}
+                </button>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setAvaliacaoModalOpen(true)}
+                  className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer"
+                >
+                  + Nova Avaliação
+                </button>
+                <Link
+                  href="/minhas-avaliacoes"
+                  className="bg-white/10 hover:bg-white/15 text-white px-4 py-2 rounded-lg text-sm font-medium transition border border-white/20"
+                >
+                  Minhas Avaliações
+                </Link>
+              </div>
             </div>
 
             {/* Review grid — 3 columns */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {sorted.map(review => (
-                <div
+                <button
                   key={review.id}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-3 cursor-pointer hover:bg-white/8 transition-colors"
+                  type="button"
+                  className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex gap-4 p-4 cursor-pointer hover:bg-white/8 hover:scale-[1.01] transition-all text-left w-full"
                   onClick={() => setSelectedReview(review)}
                 >
                   {/* Poster */}
-                  <div className="flex-shrink-0 w-[60px] h-[90px] relative rounded-lg overflow-hidden bg-white/10">
+                  <div className="flex-shrink-0 w-[80px] h-[120px] relative rounded-lg overflow-hidden bg-white/10">
                     {review.movies.poster_url ? (
                       <Image
                         src={review.movies.poster_url}
                         alt={review.movies.title}
                         fill
                         className="object-cover"
-                        sizes="60px"
+                        sizes="80px"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-400 text-xs text-center px-1">
@@ -225,30 +230,15 @@ export default function AvaliacoesPage() {
                   <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex items-start justify-between gap-1 mb-1">
                       <div className="min-w-0">
-                        <h2 className="text-white font-semibold text-base leading-tight line-clamp-2">
+                        <h2 className="text-white font-semibold text-lg leading-tight line-clamp-2">
                           {review.movies.title}
                         </h2>
-                        <p className="text-muted-400 text-sm">{review.movies.year}</p>
+                        <p className="text-muted-400 text-base">{review.movies.year}</p>
                       </div>
-                      <span className={`flex-shrink-0 ${getScoreBadgeColor(review.final_score)} text-white text-sm font-bold px-1.5 py-0.5 rounded-md`}>
+                      <span className={`flex-shrink-0 ${getScoreBadgeColor(review.final_score)} text-white text-base font-bold px-2 py-0.5 rounded-md`}>
                         {review.final_score.toFixed(1)}
                       </span>
                     </div>
-
-                    {/* 5 scores */}
-                    <div className="flex flex-col gap-0 mb-1">
-                      <div className="flex gap-x-2 flex-wrap">
-                        <span className="text-muted-300 text-xs">Rot: <span className="text-white">{review.score_script}</span></span>
-                        <span className="text-muted-300 text-xs">Dir: <span className="text-white">{review.score_direction}</span></span>
-                        <span className="text-muted-300 text-xs">Foto: <span className="text-white">{review.score_photography}</span></span>
-                        <span className="text-muted-300 text-xs">Tri: <span className="text-white">{review.score_soundtrack}</span></span>
-                        <span className="text-muted-300 text-xs">Imp: <span className="text-white">{review.score_impact}</span></span>
-                      </div>
-                    </div>
-
-                    {review.comment && (
-                      <p className="text-muted-300 text-xs line-clamp-2 mb-1">{review.comment}</p>
-                    )}
 
                     {/* Author + delete */}
                     <div className="flex items-center justify-between mt-auto pt-1.5 border-t border-white/10">
@@ -256,9 +246,9 @@ export default function AvaliacoesPage() {
                         <Avatar
                           fullName={review.profiles.full_name}
                           avatarColor={review.profiles.avatar_color}
-                          size="sm"
+                          size="xs"
                         />
-                        <span className="text-muted-400 text-xs truncate">
+                        <span className="text-muted-400 text-sm truncate">
                           {review.profiles.username || review.profiles.full_name}
                         </span>
                       </div>
@@ -276,7 +266,7 @@ export default function AvaliacoesPage() {
                       )}
                     </div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </>
@@ -302,6 +292,11 @@ export default function AvaliacoesPage() {
           loading={deleting}
         />
       )}
+
+      <NovaAvaliacaoModal
+        isOpen={avaliacaoModalOpen}
+        onClose={() => setAvaliacaoModalOpen(false)}
+      />
     </div>
   )
 }

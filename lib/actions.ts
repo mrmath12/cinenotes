@@ -1,8 +1,27 @@
 'use server'
 
 import { createClient } from './supabase-server'
+import { createAdminClient } from './supabase-admin'
 import { revalidatePath } from 'next/cache'
 import type { Profile } from './types'
+
+export async function fetchPublicReviews() {
+  const supabase = createAdminClient()
+
+  const { data, error } = await supabase
+    .from('reviews')
+    .select(`
+      id, user_id, final_score, score_script, score_direction,
+      score_photography, score_soundtrack, score_impact,
+      comment, created_at,
+      movies!inner(tmdb_id, title, year, poster_url),
+      profiles!inner(full_name, username, avatar_color)
+    `)
+    .order('created_at', { ascending: false })
+
+  if (error) return []
+  return data ?? []
+}
 
 export async function getUserProfile(userId: string): Promise<Profile> {
   const supabase = await createClient()

@@ -47,7 +47,7 @@ function FilmeCard({
 }) {
   const [imgError, setImgError] = useState(false)
   return (
-    <Link href={`/filmes/${filme.tmdb_id}`} className="block group">
+    <Link href={`/filmes/${filme.tmdb_id}`} className="block group hover:scale-[1.02] transition-all duration-300">
       <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all">
         <div className="relative w-full aspect-[2/3] bg-white/10">
           {filme.poster_url && !imgError ? (

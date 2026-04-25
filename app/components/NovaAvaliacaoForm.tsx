@@ -39,7 +39,7 @@ function scoreError(val: string): string | null {
   return null
 }
 
-export default function NovaAvaliacaoForm({ preselectedTmdbId }: { preselectedTmdbId?: string }) {
+export default function NovaAvaliacaoForm({ preselectedTmdbId, onSuccess }: { preselectedTmdbId?: string; onSuccess?: () => void }) {
   const { user } = useAuth()
   const router = useRouter()
 
@@ -210,7 +210,11 @@ export default function NovaAvaliacaoForm({ preselectedTmdbId }: { preselectedTm
       }
 
       toast.success('Avaliação salva com sucesso!')
-      router.push('/minhas-avaliacoes')
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        router.push('/minhas-avaliacoes')
+      }
     } catch {
       toast.error('Erro ao salvar avaliação. Tente novamente.')
     } finally {

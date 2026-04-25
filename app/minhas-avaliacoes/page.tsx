@@ -7,6 +7,7 @@ import { useAuth } from '../../lib/auth-context'
 import { createSupabaseBrowserClient } from '../../lib/supabase'
 import { deleteReview } from '../../lib/actions'
 import ReviewModal from '../components/ReviewModal'
+import NovaAvaliacaoModal from '../components/NovaAvaliacaoModal'
 import Footer from '../components/Footer'
 
 type MyReview = {
@@ -62,6 +63,7 @@ export default function MinhasAvaliacoesPage() {
   const [sortMode, setSortMode] = useState<SortMode>('date_desc')
   const [fetching, setFetching] = useState(true)
   const [selectedReview, setSelectedReview] = useState<MyReview | null>(null)
+  const [avaliacaoModalOpen, setAvaliacaoModalOpen] = useState(false)
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -110,52 +112,60 @@ export default function MinhasAvaliacoesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg-dark via-bg-mid to-bg-dark flex flex-col">
-      <main className="flex-1 container mx-auto px-4 py-8 max-w-3xl">
+      <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
         <h1 className="text-2xl font-bold text-white mb-6">Minhas Avaliações</h1>
 
         {reviews.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-muted-300 text-lg mb-6">Você ainda não fez nenhuma avaliação.</p>
-            <a
-              href="/nova-avaliacao"
-              className="inline-block bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-3 rounded-xl hover:from-primary-600 hover:to-accent-600 transition-all font-medium"
+            <button
+              onClick={() => setAvaliacaoModalOpen(true)}
+              className="inline-block bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-3 rounded-xl hover:from-primary-600 hover:to-accent-600 transition-all font-medium cursor-pointer"
             >
               Avaliar meu primeiro filme
-            </a>
+            </button>
           </div>
         ) : (
           <>
             {/* Sort controls */}
-            <div className="flex gap-3 mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setSortMode((prev) => (prev === 'date_desc' ? 'date_asc' : 'date_desc'))}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    sortMode === 'date_desc' || sortMode === 'date_asc'
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
+                  }`}
+                >
+                  Por Data {sortMode === 'date_desc' ? '↓' : sortMode === 'date_asc' ? '↑' : ''}
+                </button>
+                <button
+                  onClick={() => setSortMode((prev) => (prev === 'score_desc' ? 'score_asc' : 'score_desc'))}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    sortMode === 'score_desc' || sortMode === 'score_asc'
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
+                  }`}
+                >
+                  Por Nota {sortMode === 'score_desc' ? '↓' : sortMode === 'score_asc' ? '↑' : ''}
+                </button>
+              </div>
               <button
-                onClick={() => setSortMode((prev) => (prev === 'date_desc' ? 'date_asc' : 'date_desc'))}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  sortMode === 'date_desc' || sortMode === 'date_asc'
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
-                }`}
+                onClick={() => setAvaliacaoModalOpen(true)}
+                className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer"
               >
-                Por Data {sortMode === 'date_desc' ? '↓' : sortMode === 'date_asc' ? '↑' : ''}
-              </button>
-              <button
-                onClick={() => setSortMode((prev) => (prev === 'score_desc' ? 'score_asc' : 'score_desc'))}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  sortMode === 'score_desc' || sortMode === 'score_asc'
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
-                }`}
-              >
-                Por Nota {sortMode === 'score_desc' ? '↓' : sortMode === 'score_asc' ? '↑' : ''}
+                + Nova Avaliação
               </button>
             </div>
 
             {/* Review list */}
-            <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {sorted.map((review) => (
                 <button
                   key={review.id}
                   onClick={() => setSelectedReview(review)}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-4 text-left hover:border-white/20 hover:bg-white/8 transition-all cursor-pointer w-full"
+                  className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-4 text-left hover:border-white/20 hover:bg-white/8 hover:scale-[1.01] transition-all cursor-pointer w-full"
                 >
                   {/* Poster */}
                   <div className="flex-shrink-0 w-[80px] h-[120px] relative rounded-lg overflow-hidden bg-white/10">
@@ -227,6 +237,11 @@ export default function MinhasAvaliacoesPage() {
           censorProfile={false}
         />
       )}
+
+      <NovaAvaliacaoModal
+        isOpen={avaliacaoModalOpen}
+        onClose={() => setAvaliacaoModalOpen(false)}
+      />
     </div>
   )
 }

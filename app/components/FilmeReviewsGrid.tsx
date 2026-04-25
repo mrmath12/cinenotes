@@ -71,7 +71,7 @@ export default function FilmeReviewsGrid({ reviews, movie }: FilmeReviewsGridPro
             key={review.id}
             type="button"
             onClick={() => setSelected(review)}
-            className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/8 hover:border-white/20 transition-colors text-left w-full cursor-pointer"
+            className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/8 hover:border-white/20 hover:scale-[1.01] transition-all text-left w-full cursor-pointer"
           >
             <div className="flex items-start gap-3">
               {review.profiles && (

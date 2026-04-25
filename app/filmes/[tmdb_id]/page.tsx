@@ -5,6 +5,7 @@ import { createClient } from '../../../lib/supabase-server'
 import Footer from '../../components/Footer'
 import BackdropImage from '../../components/BackdropImage'
 import FilmeReviewsGrid from '../../components/FilmeReviewsGrid'
+import FilmeAvaliacaoButton from '../../components/FilmeAvaliacaoButton'
 
 interface CastMember {
   id: number
@@ -499,45 +500,51 @@ export default async function FilmeDetailPage({
           {hasWatchProviders && (
             <section className="mb-8">
               <h2 className="text-white font-semibold text-lg mb-3">Onde Assistir</h2>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+              <div className="flex flex-wrap items-start gap-x-6 gap-y-4">
                 {movie.watchProviders!.flatrate.length > 0 && (
-                  <>
-                    <span className="text-muted-400 text-xs flex-shrink-0">Streaming</span>
-                    {movie.watchProviders!.flatrate.map(p => (
-                      <a key={p.provider_id} href={movie.watchProviders!.link} target="_blank" rel="noopener noreferrer" title={p.provider_name}>
-                        <Image src={p.logo_url} alt={p.provider_name} width={40} height={40} className="rounded-lg object-cover ring-1 ring-white/10 hover:ring-white/40 transition-all" />
-                      </a>
-                    ))}
-                    {(movie.watchProviders!.rent.length > 0 || movie.watchProviders!.buy.length > 0) && (
-                      <span className="w-px h-8 bg-white/15 flex-shrink-0" />
-                    )}
-                  </>
+                  <div className="flex flex-col gap-2">
+                    <span className="text-muted-200 text-xs">Streaming</span>
+                    <div className="flex flex-wrap gap-2">
+                      {movie.watchProviders!.flatrate.map(p => (
+                        <a key={p.provider_id} href={movie.watchProviders!.link} target="_blank" rel="noopener noreferrer" title={p.provider_name}>
+                          <Image src={p.logo_url} alt={p.provider_name} width={40} height={40} className="rounded-lg object-cover ring-1 ring-white/10 hover:ring-white/40 transition-all" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
                 )}
                 {movie.watchProviders!.rent.length > 0 && (
                   <>
-                    <span className="text-muted-400 text-xs flex-shrink-0">Alugar</span>
-                    {movie.watchProviders!.rent.map(p => (
-                      <a key={p.provider_id} href={movie.watchProviders!.link} target="_blank" rel="noopener noreferrer" title={p.provider_name}>
-                        <Image src={p.logo_url} alt={p.provider_name} width={40} height={40} className="rounded-lg object-cover ring-1 ring-white/10 hover:ring-white/40 transition-all opacity-80" />
-                      </a>
-                    ))}
-                    {movie.watchProviders!.buy.length > 0 && (
-                      <span className="w-px h-8 bg-white/15 flex-shrink-0" />
-                    )}
+                    {movie.watchProviders!.flatrate.length > 0 && <span className="w-px self-stretch bg-white/15" />}
+                    <div className="flex flex-col gap-2">
+                      <span className="text-muted-200 text-xs">Alugar</span>
+                      <div className="flex flex-wrap gap-2">
+                        {movie.watchProviders!.rent.map(p => (
+                          <a key={p.provider_id} href={movie.watchProviders!.link} target="_blank" rel="noopener noreferrer" title={p.provider_name}>
+                            <Image src={p.logo_url} alt={p.provider_name} width={40} height={40} className="rounded-lg object-cover ring-1 ring-white/10 hover:ring-white/40 transition-all opacity-80" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
                   </>
                 )}
                 {movie.watchProviders!.buy.length > 0 && (
                   <>
-                    <span className="text-muted-400 text-xs flex-shrink-0">Comprar</span>
-                    {movie.watchProviders!.buy.map(p => (
-                      <a key={p.provider_id} href={movie.watchProviders!.link} target="_blank" rel="noopener noreferrer" title={p.provider_name}>
-                        <Image src={p.logo_url} alt={p.provider_name} width={40} height={40} className="rounded-lg object-cover ring-1 ring-white/10 hover:ring-white/40 transition-all opacity-80" />
-                      </a>
-                    ))}
+                    {(movie.watchProviders!.flatrate.length > 0 || movie.watchProviders!.rent.length > 0) && <span className="w-px self-stretch bg-white/15" />}
+                    <div className="flex flex-col gap-2">
+                      <span className="text-muted-200 text-xs">Comprar</span>
+                      <div className="flex flex-wrap gap-2">
+                        {movie.watchProviders!.buy.map(p => (
+                          <a key={p.provider_id} href={movie.watchProviders!.link} target="_blank" rel="noopener noreferrer" title={p.provider_name}>
+                            <Image src={p.logo_url} alt={p.provider_name} width={40} height={40} className="rounded-lg object-cover ring-1 ring-white/10 hover:ring-white/40 transition-all opacity-80" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
                   </>
                 )}
               </div>
-              <p className="text-muted-500 text-xs mt-2">Disponibilidade no Brasil via JustWatch</p>
+              <p className="text-muted-400 text-xs mt-2">Disponibilidade no Brasil via JustWatch</p>
             </section>
           )}
 
@@ -604,27 +611,11 @@ export default async function FilmeDetailPage({
 
       {/* Action button — fixed mobile, inline desktop */}
       <div className="fixed bottom-0 left-0 right-0 z-50 md:static md:bottom-auto md:z-auto border-t border-white/10 bg-bg-dark/95 md:bg-transparent md:border-t-0 backdrop-blur-sm md:backdrop-blur-none px-4 py-4 md:py-0 md:container md:mx-auto md:px-4 md:max-w-7xl md:pb-8">
-        {user ? (
-          userHasReviewed ? (
-            <div className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 font-semibold rounded-xl">
-              Você já avaliou esse filme
-            </div>
-          ) : (
-            <Link
-              href={`/nova-avaliacao?tmdb_id=${tmdb_id}`}
-              className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors shadow-lg"
-            >
-              Avaliar este Filme
-            </Link>
-          )
-        ) : (
-          <Link
-            href={`/nova-avaliacao?tmdb_id=${tmdb_id}`}
-            className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold rounded-xl transition-colors"
-          >
-            Entre para Avaliar
-          </Link>
-        )}
+        <FilmeAvaliacaoButton
+          tmdbId={Number(tmdb_id)}
+          isLoggedIn={!!user}
+          userHasReviewed={userHasReviewed}
+        />
       </div>
 
       {/* Filmes Relacionados */}

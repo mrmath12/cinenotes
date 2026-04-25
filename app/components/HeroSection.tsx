@@ -1,7 +1,12 @@
 import Link from "next/link";
 import LuckyModal from "./LuckyModal";
+import { createClient } from "../../lib/supabase-server";
 
-export default function HeroSection() {
+export default async function HeroSection() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const ctaHref = user ? "/avaliacoes" : "/register";
+
   return (
     <section className="text-center max-w-4xl mx-auto">
       <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 max-w-[900px]">
@@ -20,7 +25,7 @@ export default function HeroSection() {
             Explorar Filmes
           </Link>
           <Link
-            href="/register"
+            href={ctaHref}
             className="border-2 border-primary-500 text-primary-400 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-500 hover:text-white transition-all hover:scale-105"
           >
             Começar Agora

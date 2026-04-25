@@ -1,10 +1,5 @@
 export const AVATAR_COLORS = [
-  '#7C3AED', // violet-600
-  '#DB2777', // pink-600
-  '#2563EB', // blue-600
-  '#059669', // emerald-600
-  '#D97706', // amber-600
-  '#DC2626', // red-600
+  '#9ca3af', // muted-400
 ]
 
 export function getRandomAvatarColor(): string {

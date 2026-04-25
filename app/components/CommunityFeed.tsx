@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
 import { createSupabaseBrowserClient } from '../../lib/supabase'
 import { censorUsername } from '../../lib/utils'
 import { useAuth } from '../../lib/auth-context'
 import ReviewModal from './ReviewModal'
+import NovaAvaliacaoModal from './NovaAvaliacaoModal'
 
 const PAGE_SIZE = 10
 
@@ -60,6 +60,7 @@ export default function CommunityFeed() {
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [selectedReview, setSelectedReview] = useState<FeedReview | null>(null)
+  const [avaliacaoModalOpen, setAvaliacaoModalOpen] = useState(false)
   const offsetRef = useRef(0)
   const sentinelRef = useRef<HTMLDivElement>(null)
 
@@ -132,12 +133,12 @@ export default function CommunityFeed() {
           <p className="text-primary-200 mb-4">
             Nenhuma avaliação ainda. Seja o primeiro a avaliar um filme!
           </p>
-          <Link
-            href="/nova-avaliacao"
-            className="inline-block bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg transition"
+          <button
+            onClick={() => setAvaliacaoModalOpen(true)}
+            className="inline-block bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg transition cursor-pointer"
           >
             Nova Avaliação
-          </Link>
+          </button>
         </div>
       )}
 
@@ -147,7 +148,7 @@ export default function CommunityFeed() {
             <button
               key={review.id}
               onClick={() => setSelectedReview(review)}
-              className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:border-white/30 transition-all flex gap-4 text-left w-full cursor-pointer"
+              className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:border-white/30 hover:scale-[1.01] transition-all flex gap-4 text-left w-full cursor-pointer"
             >
               {/* Poster */}
               <div className="flex-shrink-0 w-16 h-24 rounded-lg overflow-hidden bg-white/10 relative">
@@ -215,6 +216,11 @@ export default function CommunityFeed() {
           Não há mais avaliações.
         </p>
       )}
+
+      <NovaAvaliacaoModal
+        isOpen={avaliacaoModalOpen}
+        onClose={() => setAvaliacaoModalOpen(false)}
+      />
 
       {selectedReview && selectedReview.movies && selectedReview.profiles && (
         <ReviewModal

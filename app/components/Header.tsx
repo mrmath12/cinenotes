@@ -130,18 +130,18 @@ export default function Header() {
                     <div className="absolute right-0 mt-2 w-52 bg-surface border border-white/10 rounded-xl shadow-xl py-1 z-50">
                       
                       <Link
-                        href="/minhas-avaliacoes"
-                        className="block px-4 py-2 text-sm text-muted-300 hover:text-white hover:bg-white/5 transition-colors"
-                        onClick={() => setDropdownOpen(false)}
-                      >
-                        Minhas Avaliações
-                      </Link>
-                      <Link
                         href="/perfil"
                         className="block px-4 py-2 text-sm text-muted-300 hover:text-white hover:bg-white/5 transition-colors"
                         onClick={() => setDropdownOpen(false)}
                       >
                         Meu Perfil
+                      </Link>
+                      <Link
+                        href="/minhas-avaliacoes"
+                        className="block px-4 py-2 text-sm text-muted-300 hover:text-white hover:bg-white/5 transition-colors"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Minhas Avaliações
                       </Link>
                       <hr className="my-1 border-white/10" />
                       <button

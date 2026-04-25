@@ -140,7 +140,7 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
 
   return (
     <div
-      className="relative overflow-hidden"
+      className="relative py-2 px-1"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
