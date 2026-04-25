@@ -19,7 +19,8 @@ const BUCKETS = [
   { label: '9 – 10', min: 9, max: 10 },
   { label: '7 – 8', min: 7, max: 8.9 },
   { label: '5 – 6', min: 5, max: 6.9 },
-  { label: '1 – 4', min: 1, max: 4.9 },
+  { label: '3 – 4', min: 3, max: 4.9 },
+  { label: '1 – 2', min: 1, max: 2.9 },
 ]
 
 function avg(arr: number[]) {
@@ -87,70 +88,67 @@ export default function UserStats({ reviews, headerActions }: { reviews: Dashboa
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
-          <p className="text-muted-400 text-sm mb-1">Filmes avaliados</p>
-          <p className="text-3xl font-bold text-white">{totalReviews}</p>
-        </div>
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
-          <p className="text-muted-400 text-sm mb-1">Nota média</p>
-          <p className={`text-3xl font-bold ${overallAvg >= 7 ? 'text-green-400' : overallAvg >= 5 ? 'text-yellow-400' : 'text-red-400'}`}>
-            {overallAvg.toFixed(1)}
-          </p>
-        </div>
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
-          <p className="text-muted-400 text-sm mb-1">Melhor critério</p>
-          <p className="text-white font-semibold">{best.label}</p>
-          <p className="text-green-400 text-sm">média {best.value.toFixed(1)}</p>
-        </div>
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
-          <p className="text-muted-400 text-sm mb-1">Critério mais baixo</p>
-          <p className="text-white font-semibold">{worst.label}</p>
-          <p className="text-red-400 text-sm">média {worst.value.toFixed(1)}</p>
-        </div>
+        {[
+          { label: 'Filmes avaliados', value: <p className="text-3xl font-bold text-white">{totalReviews}</p> },
+          { label: 'Nota média', value: <p className={`text-3xl font-bold ${overallAvg >= 7 ? 'text-green-400' : overallAvg >= 5 ? 'text-yellow-400' : 'text-red-400'}`}>{overallAvg.toFixed(1)}</p> },
+          { label: 'Melhor critério', value: <><p className="text-white font-semibold">{best.label}</p><p className="text-green-400 text-sm">média {best.value.toFixed(1)}</p></> },
+          { label: 'Critério mais baixo', value: <><p className="text-white font-semibold">{worst.label}</p><p className="text-red-400 text-sm">média {worst.value.toFixed(1)}</p></> },
+        ].map(({ label, value }) => (
+          <div key={label} className="p-[1px] rounded-2xl bg-gradient-to-br from-white/30 via-white/5 to-white/15">
+            <div className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] h-full">
+              <p className="text-muted-400 text-sm mb-1">{label}</p>
+              {value}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
 
         {/* Score distribution */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-          <h3 className="text-white font-medium mb-4">Distribuição de Notas</h3>
-          <div className="space-y-3">
-            {bucketCounts.map(b => (
-              <div key={b.label} className="flex items-center gap-3">
-                <span className="text-muted-400 text-xs w-10 flex-shrink-0">{b.label}</span>
-                <div className="flex-1 bg-white/10 rounded-full h-2">
-                  <div
-                    className={`h-2 rounded-full transition-all ${
-                      b.min >= 9 ? 'bg-green-400' :
-                      b.min >= 7 ? 'bg-green-500/70' :
-                      b.min >= 5 ? 'bg-yellow-400' : 'bg-red-400'
-                    }`}
-                    style={{ width: `${(b.count / maxBucketCount) * 100}%` }}
-                  />
+        <div className="p-[1px] rounded-2xl bg-gradient-to-br from-white/30 via-white/5 to-white/15">
+          <div className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] h-full">
+            <h3 className="text-white font-medium mb-4">Distribuição de Notas</h3>
+            <div className="space-y-3">
+              {bucketCounts.map(b => (
+                <div key={b.label} className="flex items-center gap-3">
+                  <span className="text-muted-400 text-xs w-14 flex-shrink-0">{b.label}</span>
+                  <div className="flex-1 bg-white/[6%] rounded-full h-2 overflow-hidden">
+                    <div
+                      className={`h-2 rounded-full transition-all ${
+                        b.min >= 9 ? 'bg-green-400' :
+                        b.min >= 7 ? 'bg-green-500/70' :
+                        b.min >= 5 ? 'bg-yellow-400' : 'bg-red-400'
+                      }`}
+                      style={{ width: `${(b.count / maxBucketCount) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-muted-300 text-xs w-4 text-right flex-shrink-0">{b.count}</span>
                 </div>
-                <span className="text-muted-300 text-xs w-4 text-right flex-shrink-0">{b.count}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Criteria breakdown */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-          <h3 className="text-white font-medium mb-4">Média por Critério</h3>
-          <div className="space-y-3">
-            {criteriaAvgs.map(c => (
-              <div key={c.key} className="flex items-center gap-3">
-                <span className="text-muted-400 text-xs w-20 flex-shrink-0">{c.label}</span>
-                <div className="flex-1 bg-white/10 rounded-full h-2">
-                  <div
-                    className={`h-2 rounded-full ${c.value >= 7 ? 'bg-green-400' : c.value >= 5 ? 'bg-yellow-400' : 'bg-red-400'}`}
-                    style={{ width: `${(c.value / 10) * 100}%` }}
-                  />
+        <div className="p-[1px] rounded-2xl bg-gradient-to-br from-white/30 via-white/5 to-white/15">
+          <div className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] h-full">
+            <h3 className="text-white font-medium mb-4">Média por Critério</h3>
+            <div className="space-y-3">
+              {criteriaAvgs.map(c => (
+                <div key={c.key} className="flex items-center gap-3">
+                  <span className="text-muted-400 text-xs w-20 flex-shrink-0">{c.label}</span>
+                  <div className="flex-1 bg-white/10 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full ${c.value >= 7 ? 'bg-green-400' : c.value >= 5 ? 'bg-yellow-400' : 'bg-red-400'}`}
+                      style={{ width: `${(c.value / 10) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-muted-300 text-xs w-6 text-right flex-shrink-0">{c.value.toFixed(1)}</span>
                 </div>
-                <span className="text-muted-300 text-xs w-6 text-right flex-shrink-0">{c.value.toFixed(1)}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
@@ -161,10 +159,10 @@ export default function UserStats({ reviews, headerActions }: { reviews: Dashboa
         <h3 className="text-white font-medium mb-3">Últimas Avaliações</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {recent.map(r => (
+            <div key={r.id} className="p-[1px] rounded-xl bg-gradient-to-br from-white/30 via-white/5 to-white/15">
             <button
-              key={r.id}
               onClick={() => setSelectedReview(r)}
-              className="bg-white/5 border border-white/10 rounded-xl p-3 flex gap-3 text-left hover:border-white/20 hover:bg-white/8 transition-all w-full cursor-pointer"
+              className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-xl p-3 flex gap-3 text-left hover:bg-white/10 transition-all w-full cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]"
             >
               <div className="flex-shrink-0 w-10 h-[60px] relative rounded overflow-hidden bg-white/10">
                 {r.movies.poster_url ? (
@@ -187,6 +185,7 @@ export default function UserStats({ reviews, headerActions }: { reviews: Dashboa
                 </span>
               </div>
             </button>
+            </div>
           ))}
         </div>
       </div>

@@ -16,7 +16,7 @@ export default async function StatsSection() {
   const totalReviews = reviewsResult.count ?? 0
 
   return (
-    <section className="mt-20 text-center">
+    <section className="mt-8 text-center">
       <div className="grid grid-cols-3 gap-8">
         <div>
           <div className="text-3xl font-bold text-white mb-2">{totalMovies}</div>

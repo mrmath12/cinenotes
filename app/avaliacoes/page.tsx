@@ -203,10 +203,10 @@ export default function AvaliacoesPage() {
             {/* Review grid — 3 columns */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {sorted.map(review => (
+              <div key={review.id} className="p-[1px] rounded-2xl bg-gradient-to-br from-white/30 via-white/5 to-white/15 hover:scale-[1.01] transition-all">
                 <button
-                  key={review.id}
                   type="button"
-                  className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex gap-4 p-4 cursor-pointer hover:bg-white/8 hover:scale-[1.01] transition-all text-left w-full"
+                  className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] flex gap-4 p-4 cursor-pointer text-left w-full"
                   onClick={() => setSelectedReview(review)}
                 >
                   {/* Poster */}
@@ -249,7 +249,9 @@ export default function AvaliacoesPage() {
                           size="xs"
                         />
                         <span className="text-muted-400 text-sm truncate">
-                          {review.profiles.username || review.profiles.full_name}
+                          {user
+                            ? (review.profiles.username || review.profiles.full_name)
+                            : (() => { const n = review.profiles.username || review.profiles.full_name; return n.length <= 2 ? n[0] + '*' : n[0] + '*'.repeat(n.length - 2) + n[n.length - 1] })()}
                         </span>
                       </div>
 
@@ -267,6 +269,7 @@ export default function AvaliacoesPage() {
                     </div>
                   </div>
                 </button>
+              </div>
               ))}
             </div>
           </>
@@ -282,6 +285,7 @@ export default function AvaliacoesPage() {
           onClose={() => setSelectedReview(null)}
           showDelete={!!(user && user.id === selectedReview.user_id)}
           onDelete={handleModalDelete}
+          censorProfile={!user}
         />
       )}
 

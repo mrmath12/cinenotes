@@ -47,8 +47,8 @@ function FilmeCard({
 }) {
   const [imgError, setImgError] = useState(false)
   return (
-    <Link href={`/filmes/${filme.tmdb_id}`} className="block group hover:scale-[1.02] transition-all duration-300">
-      <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all">
+    <div className="p-[1px] rounded-2xl bg-gradient-to-br from-white/30 via-white/5 to-white/15 hover:scale-[1.02] transition-all duration-300">
+    <Link href={`/filmes/${filme.tmdb_id}`} className="block group bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl h-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] overflow-hidden">
         <div className="relative w-full aspect-[2/3] bg-white/10">
           {filme.poster_url && !imgError ? (
             <Image
@@ -105,8 +105,8 @@ function FilmeCard({
               : 'Seja o primeiro!'}
           </p>
         </div>
-      </div>
     </Link>
+    </div>
   )
 }
 

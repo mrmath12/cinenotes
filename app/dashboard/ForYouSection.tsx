@@ -102,11 +102,17 @@ export default function ForYouSection({ userId, userReviews }: Props) {
 
       // Prefer genre matches; fall back to all community picks
       const genreMatches = candidates.filter(c => c.genreMatch)
-      const result = topGenres.length > 0 && genreMatches.length >= 4
-        ? genreMatches.slice(0, 8)
-        : candidates.slice(0, 8)
+      const pool = topGenres.length > 0 && genreMatches.length >= 4
+        ? genreMatches.slice(0, 20)
+        : candidates.slice(0, 20)
 
-      setRecs(result)
+      // Fisher-Yates shuffle then take 8
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]]
+      }
+
+      setRecs(pool.slice(0, 8))
       setLoading(false)
     })
   }, [userId, userReviews])
@@ -150,10 +156,13 @@ export default function ForYouSection({ userId, userReviews }: Props) {
       {!loading && recs.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {recs.map(({ movie, avgScore, reviewCount }) => (
-            <Link
+            <div
               key={movie.tmdb_id}
+              className="p-[1px] rounded-xl bg-gradient-to-br from-white/30 via-white/5 to-white/15 hover:scale-[1.03] transition-all duration-300"
+            >
+            <Link
               href={`/filmes/${movie.tmdb_id}`}
-              className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-white/20 hover:bg-white/8 hover:scale-[1.03] transition-all duration-300 group"
+              className="block bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] overflow-hidden group"
             >
               <div className="relative w-full aspect-[2/3] bg-white/10">
                 {movie.poster_url ? (
@@ -183,6 +192,7 @@ export default function ForYouSection({ userId, userReviews }: Props) {
                 </p>
               </div>
             </Link>
+            </div>
           ))}
         </div>
       )}

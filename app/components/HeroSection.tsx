@@ -1,38 +1,74 @@
-import Link from "next/link";
-import LuckyModal from "./LuckyModal";
 import { createClient } from "../../lib/supabase-server";
+import HeroVideoBackground from "./HeroVideoBackground";
+
+interface TrendingMovie {
+  id: number
+  title: string
+  release_date?: string
+}
+
+interface VideoResult {
+  key: string
+  site: string
+  type: string
+}
+
+async function fetchTrailerKey(movieId: number, apiKey: string): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}&language=pt-BR`,
+      { next: { revalidate: 86400 } },
+    )
+    if (!res.ok) return null
+    const data = await res.json()
+    const videos: VideoResult[] = data.results ?? []
+    return (
+      videos.find(v => v.site === 'YouTube' && v.type === 'Trailer')?.key ??
+      videos.find(v => v.site === 'YouTube' && v.type === 'Teaser')?.key ??
+      null
+    )
+  } catch {
+    return null
+  }
+}
 
 export default async function HeroSection() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const ctaHref = user ? "/avaliacoes" : "/register";
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const ctaHref = user ? "/avaliacoes" : "/register"
 
-  return (
-    <section className="text-center max-w-4xl mx-auto">
-      <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 max-w-[900px]">
-        Sua opinião merece mais do que
-        <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent"> uma nota</span>
-      </h1>
-      <p className="text-xl md:text-2xl text-muted-300 mb-8 max-w-[800px] leading-relaxed place-self-center">
-        Avalie cada aspecto — do roteiro à trilha sonora — <br/>e veja o que a comunidade está achando.
-      </p>
-      <div className="flex flex-col gap-4 items-center mx-auto">
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/filmes"
-            className="border-2 border-white/20 text-white/80 px-8 py-4 rounded-lg text-lg font-semibold hover:border-white/40 hover:text-white transition-all hover:scale-105"
-          >
-            Explorar Filmes
-          </Link>
-          <Link
-            href={ctaHref}
-            className="border-2 border-primary-500 text-primary-400 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-500 hover:text-white transition-all hover:scale-105"
-          >
-            Começar Agora
-          </Link>
-        </div>
-        <LuckyModal />
-      </div>
-    </section>
-  );
+  const apiKey = process.env.TMDB_API_KEY
+  let movies: { trailerKey: string; title: string; year: number | null; tmdbId: number }[] = []
+
+  try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}&language=pt-BR`,
+      { next: { revalidate: 3600 } },
+    )
+    if (res.ok) {
+      const data = await res.json()
+      const top5: TrendingMovie[] = (data.results ?? []).slice(0, 5)
+
+      const withTrailers = await Promise.all(
+        top5.map(async (movie) => {
+          const trailerKey = await fetchTrailerKey(movie.id, apiKey!)
+          if (!trailerKey) return null
+          return {
+            trailerKey,
+            title: movie.title,
+            year: movie.release_date
+              ? parseInt(movie.release_date.slice(0, 4), 10) || null
+              : null,
+            tmdbId: movie.id,
+          }
+        }),
+      )
+
+      movies = withTrailers.filter((m): m is NonNullable<typeof m> => m !== null)
+    }
+  } catch {
+    // silent fallback — hero renders without video
+  }
+
+  return <HeroVideoBackground movies={movies} ctaHref={ctaHref} />
 }

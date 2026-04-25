@@ -42,20 +42,22 @@ export default function NovaAvaliacaoModal({ isOpen, onClose, initialTmdbId }: P
       aria-modal="true"
     >
       <div
-        className="relative w-full max-w-lg mx-4 bg-surface border border-white/10 rounded-2xl p-6 max-h-[90vh] overflow-y-auto"
+        className="p-[1px] rounded-2xl bg-gradient-to-br from-white/30 via-white/5 to-white/15 w-full max-w-lg mx-4"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between mb-4">
-          <h2 className="text-white text-xl font-bold">Nova Avaliação</h2>
-          <button
-            onClick={onClose}
-            className="text-white/50 hover:text-white text-2xl leading-none ml-4 flex-shrink-0"
-            aria-label="Fechar"
-          >
-            ×
-          </button>
+        <div className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] max-h-[90vh] overflow-y-auto">
+          <div className="flex items-start justify-between mb-4">
+            <h2 className="text-white text-xl font-bold">Nova Avaliação</h2>
+            <button
+              onClick={onClose}
+              className="text-white/50 hover:text-white text-2xl leading-none ml-4 flex-shrink-0"
+              aria-label="Fechar"
+            >
+              ×
+            </button>
+          </div>
+          <NovaAvaliacaoForm preselectedTmdbId={initialTmdbId} onSuccess={onClose} />
         </div>
-        <NovaAvaliacaoForm preselectedTmdbId={initialTmdbId} onSuccess={onClose} />
       </div>
     </div>
   )

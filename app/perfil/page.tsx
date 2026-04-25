@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useAuth } from '../../lib/auth-context'
 import { createSupabaseBrowserClient } from '../../lib/supabase'
-import { getInitials, AVATAR_COLORS } from '../../lib/avatar-colors'
+import { getInitials } from '../../lib/avatar-colors'
 import { updateProfile } from '../../lib/actions'
 import Footer from '../components/Footer'
+import ReviewModal from '../components/ReviewModal'
 
 interface Profile {
   full_name: string
@@ -42,13 +43,6 @@ function getScoreBadgeColor(score: number): string {
   return 'bg-red-600'
 }
 
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('pt-BR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
-}
 
 function formatMemberSince(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('pt-BR', {
@@ -64,6 +58,8 @@ export default function PerfilPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [reviews, setReviews] = useState<ReviewWithMovie[]>([])
   const [fetching, setFetching] = useState(true)
+
+  const [selectedReview, setSelectedReview] = useState<ReviewWithMovie | null>(null)
 
   const [editing, setEditing] = useState(false)
   const [editName, setEditName] = useState('')
@@ -179,10 +175,11 @@ export default function PerfilPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg-dark via-bg-mid to-bg-dark flex flex-col">
-      <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl">
+      <main className="flex-1 container mx-auto px-4 py-12 max-w-7xl">
 
         {/* ── Profile card ── */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
+        <div className="p-[1px] rounded-2xl bg-gradient-to-br from-white/30 via-white/5 to-white/15 mb-8">
+        <div className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] p-6">
 
           {/* Top row: avatar + info + edit button */}
           <div className="flex items-start justify-between gap-4 mb-6">
@@ -299,71 +296,73 @@ export default function PerfilPage() {
             </div>
           )}
         </div>
+        </div>
 
-        {/* ── Reviews section ── */}
-        <h2 className="text-white text-lg font-semibold mb-4">Avaliações</h2>
+        {/* ── Poster wall ── */}
+        <h2 className="text-white text-lg font-semibold mb-4">
+        Minhas avaliações
+          {reviews.length > 0 && (
+            <span className="text-muted-400 text-sm font-normal ml-2">{reviews.length} filmes</span>
+          )}
+        </h2>
 
         {reviews.length === 0 ? (
           <p className="text-muted-300 text-center py-16">Nenhuma avaliação ainda.</p>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 gap-2">
             {reviews.map(review => (
-              <div
+              <button
                 key={review.id}
-                className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-4"
+                onClick={() => setSelectedReview(review)}
+                className="group relative aspect-[2/3] rounded-md overflow-hidden bg-white/10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-400"
               >
-                {/* Poster */}
-                <div className="flex-shrink-0 w-[72px] h-[108px] relative rounded-lg overflow-hidden bg-white/10">
-                  {review.movies.poster_url ? (
-                    <Image
-                      src={review.movies.poster_url}
-                      alt={review.movies.title}
-                      fill
-                      className="object-cover"
-                      sizes="72px"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-400 text-xs text-center px-1">
-                      Sem poster
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <div>
-                      <h3 className="text-white font-semibold text-sm leading-tight">
-                        {review.movies.title}
-                      </h3>
-                      <p className="text-muted-400 text-xs">{review.movies.year}</p>
-                    </div>
-                    <span className={`flex-shrink-0 ${getScoreBadgeColor(review.final_score)} text-white text-sm font-bold px-2 py-0.5 rounded-lg`}>
-                      {review.final_score.toFixed(1)}
-                    </span>
+                {review.movies.poster_url ? (
+                  <Image
+                    src={review.movies.poster_url}
+                    alt={review.movies.title}
+                    fill
+                    className="object-cover transition-transform duration-200 group-hover:scale-105"
+                    sizes="(max-width: 640px) 25vw, (max-width: 768px) 17vw, (max-width: 1024px) 13vw, 9vw"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-400 text-[10px] text-center px-1 leading-tight">
+                    {review.movies.title}
                   </div>
+                )}
 
-                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5 mb-1.5">
-                    <span className="text-muted-300 text-xs">Roteiro: <span className="text-white">{review.score_script}</span></span>
-                    <span className="text-muted-300 text-xs">Direção: <span className="text-white">{review.score_direction}</span></span>
-                    <span className="text-muted-300 text-xs">Foto: <span className="text-white">{review.score_photography}</span></span>
-                    <span className="text-muted-300 text-xs">Trilha: <span className="text-white">{review.score_soundtrack}</span></span>
-                    <span className="text-muted-300 text-xs">Impacto: <span className="text-white">{review.score_impact}</span></span>
-                  </div>
-
-                  {review.comment && (
-                    <p className="text-muted-300 text-xs mb-1 line-clamp-2">{review.comment}</p>
-                  )}
-
-                  <span className="text-muted-400 text-xs">{formatDate(review.created_at)}</span>
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-1 p-1">
+                  <span className={`text-white text-sm font-bold px-2 py-0.5 rounded-md ${getScoreBadgeColor(review.final_score)}`}>
+                    {review.final_score.toFixed(1)}
+                  </span>
+                  <span className="text-white text-[10px] text-center leading-tight line-clamp-2 font-medium">
+                    {review.movies.title}
+                  </span>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         )}
       </main>
 
       <Footer />
+
+      {selectedReview && (
+        <ReviewModal
+          review={{
+            ...selectedReview,
+            profiles: {
+              full_name: profile?.full_name ?? '',
+              username: profile?.username ?? '',
+              avatar_color: profile?.avatar_color ?? '#7C3AED',
+            },
+          }}
+          isOpen={true}
+          onClose={() => setSelectedReview(null)}
+          showDelete={false}
+          censorProfile={false}
+        />
+      )}
     </div>
   )
 }

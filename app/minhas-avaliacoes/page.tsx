@@ -130,42 +130,48 @@ export default function MinhasAvaliacoesPage() {
             {/* Sort controls */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex gap-3">
+                <div className={`p-[1px] rounded-lg bg-gradient-to-br ${sortMode === 'date_desc' || sortMode === 'date_asc' ? 'from-primary-400/60 via-primary-500/10 to-primary-500/30' : 'from-white/30 via-white/5 to-white/15'}`}>
+                  <button
+                    onClick={() => setSortMode((prev) => (prev === 'date_desc' ? 'date_asc' : 'date_desc'))}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all backdrop-blur-xl backdrop-saturate-150 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] ${
+                      sortMode === 'date_desc' || sortMode === 'date_asc'
+                        ? 'bg-white/10 text-primary-200 hover:bg-primary-500/20'
+                        : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
+                    }`}
+                  >
+                    Por Data {sortMode === 'date_desc' ? '↓' : sortMode === 'date_asc' ? '↑' : ''}
+                  </button>
+                </div>
+                <div className={`p-[1px] rounded-lg bg-gradient-to-br ${sortMode === 'score_desc' || sortMode === 'score_asc' ? 'from-primary-400/60 via-primary-500/10 to-primary-500/30' : 'from-white/30 via-white/5 to-white/15'}`}>
+                  <button
+                    onClick={() => setSortMode((prev) => (prev === 'score_desc' ? 'score_asc' : 'score_desc'))}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all backdrop-blur-xl backdrop-saturate-150 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] ${
+                      sortMode === 'score_desc' || sortMode === 'score_asc'
+                        ? 'bg-white/10 text-primary-200 hover:bg-primary-500/20'
+                        : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
+                    }`}
+                  >
+                    Por Nota {sortMode === 'score_desc' ? '↓' : sortMode === 'score_asc' ? '↑' : ''}
+                  </button>
+                </div>
+              </div>
+              <div className="p-[1px] rounded-lg bg-gradient-to-br from-primary-400/60 via-primary-500/10 to-primary-500/30">
                 <button
-                  onClick={() => setSortMode((prev) => (prev === 'date_desc' ? 'date_asc' : 'date_desc'))}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    sortMode === 'date_desc' || sortMode === 'date_asc'
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
-                  }`}
+                  onClick={() => setAvaliacaoModalOpen(true)}
+                  className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-primary-300 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:bg-primary-500/20 hover:text-primary-200 hover:scale-105 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]"
                 >
-                  Por Data {sortMode === 'date_desc' ? '↓' : sortMode === 'date_asc' ? '↑' : ''}
-                </button>
-                <button
-                  onClick={() => setSortMode((prev) => (prev === 'score_desc' ? 'score_asc' : 'score_desc'))}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    sortMode === 'score_desc' || sortMode === 'score_asc'
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
-                  }`}
-                >
-                  Por Nota {sortMode === 'score_desc' ? '↓' : sortMode === 'score_asc' ? '↑' : ''}
+                  + Nova Avaliação
                 </button>
               </div>
-              <button
-                onClick={() => setAvaliacaoModalOpen(true)}
-                className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer"
-              >
-                + Nova Avaliação
-              </button>
             </div>
 
             {/* Review list */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {sorted.map((review) => (
+              <div key={review.id} className="p-[1px] rounded-2xl bg-gradient-to-br from-white/30 via-white/5 to-white/15 hover:scale-[1.01] transition-all">
                 <button
-                  key={review.id}
                   onClick={() => setSelectedReview(review)}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-4 text-left hover:border-white/20 hover:bg-white/8 hover:scale-[1.01] transition-all cursor-pointer w-full"
+                  className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] p-4 flex gap-4 text-left cursor-pointer w-full"
                 >
                   {/* Poster */}
                   <div className="flex-shrink-0 w-[80px] h-[120px] relative rounded-lg overflow-hidden bg-white/10">
@@ -219,6 +225,7 @@ export default function MinhasAvaliacoesPage() {
                     </span>
                   </div>
                 </button>
+              </div>
               ))}
             </div>
           </>
