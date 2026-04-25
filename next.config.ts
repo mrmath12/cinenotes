@@ -29,6 +29,7 @@ const securityHeaders = [
       `font-src 'self'`,
       `connect-src 'self' https://${SUPABASE_HOST} https://api.themoviedb.org`,
       `frame-ancestors 'none'`,
+      `frame-src https://www.youtube.com https://www.youtube-nocookie.com`,
     ].join('; '),
   },
 ];

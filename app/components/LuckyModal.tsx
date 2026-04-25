@@ -210,12 +210,14 @@ export default function LuckyModal() {
 
   return (
     <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-primary-600 hover:to-accent-600 transition-all transform hover:scale-105 cursor-pointer"
-      >
-        Estou com Sorte
-      </button>
+      <div className="p-[1px] rounded-lg bg-gradient-to-br from-accent-400/60 via-accent-500/10 to-accent-500/30">
+        <button
+          onClick={() => setIsOpen(true)}
+          className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-accent-400 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-accent-500/20 hover:text-accent-300 transition-all transform hover:scale-105 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]"
+        >
+          Estou com Sorte
+        </button>
+      </div>
 
       {isOpen && (
         <div

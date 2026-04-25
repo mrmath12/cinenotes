@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '../../lib/auth-context'
+import { censorUsername } from '../../lib/utils'
 import Avatar from './Avatar'
 import ReviewModal from './ReviewModal'
 
@@ -41,6 +43,7 @@ function getScoreColor(score: number): string {
 
 export default function FilmeReviewsGrid({ reviews, movie }: FilmeReviewsGridProps) {
   const [selected, setSelected] = useState<ReviewItem | null>(null)
+  const { user } = useAuth()
 
   if (reviews.length === 0) {
     return (
@@ -84,7 +87,9 @@ export default function FilmeReviewsGrid({ reviews, movie }: FilmeReviewsGridPro
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-white text-sm font-medium truncate">
-                    {review.profiles?.full_name ?? review.profiles?.username ?? 'Usuário'}
+                    {user
+                      ? (review.profiles?.full_name ?? review.profiles?.username ?? 'Usuário')
+                      : (() => { const n = review.profiles?.username || review.profiles?.full_name || 'Usuário'; return n[0] + '*'.repeat(Math.max(n.length - 2, 1)) + (n.length > 1 ? n[n.length - 1] : '') })()}
                   </span>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <span className={`${getScoreColor(review.final_score)} text-white text-xs font-bold px-2 py-0.5 rounded-lg`}>
@@ -111,6 +116,7 @@ export default function FilmeReviewsGrid({ reviews, movie }: FilmeReviewsGridPro
           review={modalReview}
           isOpen={true}
           onClose={() => setSelected(null)}
+          censorProfile={!user}
         />
       )}
     </>

@@ -1,3 +1,11 @@
+export interface FilmCard {
+  id: number
+  title: string
+  poster_url: string | null
+  year: number | null
+  character?: string
+}
+
 export interface Profile {
   id: string
   full_name: string

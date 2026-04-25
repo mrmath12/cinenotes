@@ -52,6 +52,7 @@ interface MovieDetail {
   runtime: number | null
   genres: string[]
   director: string | null
+  directorId: number | null
   cast: CastMember[]
   certification: string | null
   trailers: Trailer[]
@@ -93,9 +94,11 @@ async function fetchMovieDetail(tmdbId: string): Promise<MovieDetail | null> {
     const year = data.release_date
       ? parseInt(data.release_date.slice(0, 4), 10) || null
       : null
-    const director =
-      data.credits?.crew?.find((c: { job: string; name: string }) => c.job === 'Director')
-        ?.name ?? null
+    const directorCrew = data.credits?.crew?.find(
+      (c: { id: number; job: string }) => c.job === 'Director',
+    )
+    const director = directorCrew?.name ?? null
+    const directorId = directorCrew?.id ?? null
 
     const cast: CastMember[] = (data.credits?.cast ?? [])
       .slice(0, 6)
@@ -181,6 +184,7 @@ async function fetchMovieDetail(tmdbId: string): Promise<MovieDetail | null> {
       runtime: data.runtime ?? null,
       genres: data.genres?.map((g: { name: string }) => g.name) ?? [],
       director,
+      directorId,
       cast,
       certification,
       trailers,
@@ -387,9 +391,18 @@ export default async function FilmeDetailPage({
                       </span>
                     )}
                     {movie.director && (
-                      <span className="text-muted-400 text-sm">
-                        · Dir. {movie.director}
-                      </span>
+                      movie.directorId ? (
+                        <Link
+                          href={`/diretor/${movie.directorId}`}
+                          className="text-muted-400 text-sm hover:text-white transition-colors"
+                        >
+                          · Dir. {movie.director}
+                        </Link>
+                      ) : (
+                        <span className="text-muted-400 text-sm">
+                          · Dir. {movie.director}
+                        </span>
+                      )
                     )}
                     {movie.certification && (
                       <span
@@ -469,8 +482,12 @@ export default async function FilmeDetailPage({
                 <h2 className="text-white font-semibold text-lg mb-3">Elenco</h2>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
                   {movie.cast.map(member => (
-                    <div key={member.id} className="flex items-center gap-2 min-w-0">
-                      <div className="w-9 h-9 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
+                    <Link
+                      key={member.id}
+                      href={`/ator/${member.id}`}
+                      className="flex items-center gap-2 min-w-0 group"
+                    >
+                      <div className="w-9 h-9 rounded-full overflow-hidden bg-white/10 flex-shrink-0 ring-1 ring-transparent group-hover:ring-white/30 transition-all">
                         {member.profile_url ? (
                           <Image
                             src={member.profile_url}
@@ -486,10 +503,12 @@ export default async function FilmeDetailPage({
                         )}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-white text-sm font-medium truncate">{member.name}</p>
+                        <p className="text-white text-sm font-medium truncate group-hover:text-primary-400 transition-colors">
+                          {member.name}
+                        </p>
                         <p className="text-muted-400 text-xs truncate">{member.character}</p>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </section>

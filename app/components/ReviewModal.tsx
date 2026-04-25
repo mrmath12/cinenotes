@@ -113,8 +113,11 @@ export default function ReviewModal({
       onClick={onClose}
     >
       <div
-        className="bg-surface border border-white/10 rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto"
+        className="p-[1px] rounded-2xl bg-gradient-to-br from-white/30 via-white/5 to-white/15 w-full max-w-lg"
         onClick={(e) => e.stopPropagation()}
+      >
+      <div
+        className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] max-h-[90vh] overflow-y-auto"
       >
         {/* Close button */}
         <div className="flex justify-end p-4 pb-0">
@@ -252,6 +255,7 @@ export default function ReviewModal({
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   )

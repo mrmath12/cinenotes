@@ -78,7 +78,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-bg-dark/95 backdrop-blur-sm border-b border-white/5">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-bg-dark/70 backdrop-blur-xl backdrop-saturate-150 border-b border-white/10 shadow-[inset_0_-1px_0_rgba(255,255,255,0.05)]">
         <div className="container mx-auto px-4 py-4 max-w-7xl">
         <nav className="flex items-center justify-between">
           {/* Logo */}
@@ -127,7 +127,8 @@ export default function Header() {
                   </button>
 
                   {dropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-52 bg-surface border border-white/10 rounded-xl shadow-xl py-1 z-50">
+                    <div className="absolute right-0 mt-2 w-52 p-[1px] rounded-xl bg-gradient-to-br from-white/30 via-white/5 to-white/15 shadow-xl z-50">
+                    <div className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-xl py-1 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]">
                       
                       <Link
                         href="/perfil"
@@ -151,6 +152,7 @@ export default function Header() {
                         Sair
                       </button>
                     </div>
+                    </div>
                   )}
                 </div>
               </>
@@ -168,9 +170,11 @@ export default function Header() {
                 >
                   Criar conta
                 </Link>
-                <Link href="/login" className="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all">
-                  Entrar
-                </Link>
+                <div className="p-[1px] rounded-lg bg-gradient-to-br from-accent-400/60 via-accent-500/10 to-accent-500/30">
+                  <Link href="/login" className="block bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-accent-400 px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent-500/20 hover:text-accent-300 transition-all hover:scale-105 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]">
+                    Entrar
+                  </Link>
+                </div>
               </>
             )}
           </div>
@@ -199,7 +203,7 @@ export default function Header() {
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-[60] bg-black/60" onClick={closeMobile}>
           <div
-            className="absolute top-0 right-0 h-full w-72 bg-surface border-l border-white/10 shadow-2xl flex flex-col py-6 px-6"
+            className="absolute top-0 right-0 h-full w-72 bg-white/5 backdrop-blur-xl backdrop-saturate-150 border-l border-white/15 shadow-2xl shadow-[inset_1px_0_0_rgba(255,255,255,0.08)] flex flex-col py-6 px-6"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header do drawer */}
@@ -271,13 +275,15 @@ export default function Header() {
                 </nav>
 
                 <div className="flex flex-col space-y-3 mt-6">
-                  <Link
-                    href="/login"
-                    onClick={closeMobile}
-                    className="text-center text-muted-300 hover:text-white border border-white/20 hover:border-white/40 px-4 py-2 rounded-lg transition-colors"
-                  >
-                    Entrar
-                  </Link>
+                  <div className="p-[1px] rounded-lg bg-gradient-to-br from-white/40 via-white/5 to-white/20">
+                    <Link
+                      href="/login"
+                      onClick={closeMobile}
+                      className="block text-center bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-white px-4 py-2 rounded-lg hover:bg-white/15 transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]"
+                    >
+                      Entrar
+                    </Link>
+                  </div>
                   <Link
                     href="/register"
                     onClick={closeMobile}

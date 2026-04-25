@@ -154,7 +154,8 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
               className={`transition-transform duration-300 ${visibilityClass(pos)}`}
             >
               <div onClick={() => setSelectedReview(review)} className="block h-full cursor-pointer">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 hover:border-primary-400/60 hover:scale-[1.02] transition-all h-full cursor-pointer">
+              <div className="p-[1px] rounded-xl bg-gradient-to-br from-white/30 via-white/5 to-white/15 h-full hover:scale-[1.02] transition-all">
+              <div className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] overflow-hidden h-full">
                 {/* Poster */}
                 <div className="relative w-full aspect-[2/3] bg-white/5">
                   {review.poster_url ? (
@@ -189,10 +190,15 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
                       {new Date(review.created_at).toLocaleDateString('pt-BR')}
                     </p>
                     {review.reviewer && (
-                      <p className="text-muted-400 text-xs truncate ml-2">@{review.reviewer}</p>
+                      <p className="text-muted-400 text-xs truncate ml-2">
+                        {user
+                          ? `@${review.reviewer}`
+                          : (() => { const n = review.reviewer; return '@' + (n.length <= 2 ? n[0] + '*' : n[0] + '*'.repeat(n.length - 2) + n[n.length - 1]) })()}
+                      </p>
                     )}
                   </div>
                 </div>
+              </div>
               </div>
               </div>
             </div>

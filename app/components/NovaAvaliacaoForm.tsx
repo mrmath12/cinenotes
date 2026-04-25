@@ -223,16 +223,18 @@ export default function NovaAvaliacaoForm({ preselectedTmdbId, onSuccess }: { pr
   }
 
   return (
+    <div className="p-[1px] rounded-xl bg-gradient-to-br from-white/30 via-white/5 to-white/15">
     <form
       onSubmit={handleSubmit}
-      className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 space-y-6"
+      className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-xl p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] space-y-6"
     >
       {/* Movie search */}
       <div>
         <label htmlFor="movie-search" className="block text-white font-medium mb-2">Filme</label>
 
         {selectedMovie ? (
-          <div className="flex items-center gap-3 bg-white/10 rounded-lg p-3 border border-white/20">
+          <div className="p-[1px] rounded-lg bg-gradient-to-br from-white/30 via-white/5 to-white/15">
+          <div className="flex items-center gap-3 bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-lg p-3 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]">
             {selectedMovie.poster_url ? (
               <Image
                 src={selectedMovie.poster_url}
@@ -261,6 +263,7 @@ export default function NovaAvaliacaoForm({ preselectedTmdbId, onSuccess }: { pr
               ×
             </button>
           </div>
+          </div>
         ) : (
           <div className="relative">
             <input
@@ -269,7 +272,7 @@ export default function NovaAvaliacaoForm({ preselectedTmdbId, onSuccess }: { pr
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar filme..."
-              className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 pr-10"
+              className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 pr-10"
             />
             {searching && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -365,7 +368,7 @@ export default function NovaAvaliacaoForm({ preselectedTmdbId, onSuccess }: { pr
                     placeholder="1.0 – 10.0"
                     value={scores[c.key]}
                     onChange={(e) => handleScoreChange(c.key, e.target.value)}
-                    className={`w-full bg-white/10 border rounded-lg px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                    className={`w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 border rounded-lg px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                       err ? 'border-red-400' : 'border-white/20'
                     }`}
                   />
@@ -389,22 +392,25 @@ export default function NovaAvaliacaoForm({ preselectedTmdbId, onSuccess }: { pr
           onChange={(e) => setComment(e.target.value.slice(0, 1000))}
           rows={4}
           placeholder="Escreva sua opinião sobre o filme..."
-          className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+          className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
         />
         <p className="mt-1 text-right text-primary-400 text-xs">{comment.length}/1000</p>
       </div>
 
       {/* Submit */}
-      <button
-        type="submit"
-        disabled={!isFormValid || submitting}
-        className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2"
-      >
-        {submitting && (
-          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-        )}
-        {submitting ? 'Salvando...' : 'Salvar Avaliação'}
-      </button>
+      <div className={`p-[1px] rounded-lg bg-gradient-to-br from-primary-400/60 via-primary-500/10 to-primary-500/30 ${(!isFormValid || submitting) ? 'opacity-50' : ''}`}>
+        <button
+          type="submit"
+          disabled={!isFormValid || submitting}
+          className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-primary-300 font-semibold py-3 rounded-lg transition hover:bg-primary-500/20 hover:text-primary-200 disabled:cursor-not-allowed shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] flex items-center justify-center gap-2"
+        >
+          {submitting && (
+            <div className="w-4 h-4 border-2 border-primary-300 border-t-transparent rounded-full animate-spin" />
+          )}
+          {submitting ? 'Salvando...' : 'Salvar Avaliação'}
+        </button>
+      </div>
     </form>
+    </div>
   )
 }
