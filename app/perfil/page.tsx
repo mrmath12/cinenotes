@@ -10,6 +10,7 @@ import { getInitials } from '../../lib/avatar-colors'
 import { updateProfile } from '../../lib/actions'
 import Footer from '../components/Footer'
 import ReviewModal from '../components/ReviewModal'
+import LiquidButton from '../components/LiquidButton'
 
 interface Profile {
   full_name: string
@@ -60,6 +61,8 @@ export default function PerfilPage() {
   const [fetching, setFetching] = useState(true)
 
   const [selectedReview, setSelectedReview] = useState<ReviewWithMovie | null>(null)
+  const [sortBy, setSortBy] = useState<'date' | 'score'>('date')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
 
   const [editing, setEditing] = useState(false)
   const [editName, setEditName] = useState('')
@@ -167,6 +170,12 @@ export default function PerfilPage() {
   if (!user) return null
 
   const displayName = profile?.full_name || user.email?.split('@')[0] || 'Usuário'
+
+  const sortedReviews = [...reviews].sort((a, b) => {
+    const mul = sortDir === 'desc' ? -1 : 1
+    if (sortBy === 'score') return mul * (a.final_score - b.final_score)
+    return mul * (new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+  })
   const avatarColor = profile?.avatar_color || '#7C3AED'
   const avgScore =
     reviews.length > 0
@@ -299,18 +308,45 @@ export default function PerfilPage() {
         </div>
 
         {/* ── Poster wall ── */}
-        <h2 className="text-white text-lg font-semibold mb-4">
-        Minhas avaliações
-          {reviews.length > 0 && (
-            <span className="text-muted-400 text-sm font-normal ml-2">{reviews.length} filmes</span>
+        <div className="flex items-center justify-between mb-4 gap-4">
+          <h2 className="text-white text-lg font-semibold">
+            Minhas avaliações
+            {reviews.length > 0 && (
+              <span className="text-muted-400 text-sm font-normal ml-2">{reviews.length} filmes</span>
+            )}
+          </h2>
+
+          {reviews.length > 1 && (
+            <div className="flex gap-2 flex-shrink-0">
+              <LiquidButton
+                variant={sortBy === 'date' ? 'purple' : 'gray'}
+                size="sm"
+                onClick={() => {
+                  if (sortBy === 'date') setSortDir(d => d === 'desc' ? 'asc' : 'desc')
+                  else { setSortBy('date'); setSortDir('desc') }
+                }}
+              >
+                Por data {sortBy === 'date' ? (sortDir === 'desc' ? '↓' : '↑') : ''}
+              </LiquidButton>
+              <LiquidButton
+                variant={sortBy === 'score' ? 'purple' : 'gray'}
+                size="sm"
+                onClick={() => {
+                  if (sortBy === 'score') setSortDir(d => d === 'desc' ? 'asc' : 'desc')
+                  else { setSortBy('score'); setSortDir('desc') }
+                }}
+              >
+                Por nota {sortBy === 'score' ? (sortDir === 'desc' ? '↓' : '↑') : ''}
+              </LiquidButton>
+            </div>
           )}
-        </h2>
+        </div>
 
         {reviews.length === 0 ? (
           <p className="text-muted-300 text-center py-16">Nenhuma avaliação ainda.</p>
         ) : (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 gap-2">
-            {reviews.map(review => (
+            {sortedReviews.map(review => (
               <button
                 key={review.id}
                 onClick={() => setSelectedReview(review)}
@@ -329,6 +365,11 @@ export default function PerfilPage() {
                     {review.movies.title}
                   </div>
                 )}
+
+                {/* Score badge */}
+                <div className={`absolute bottom-1.5 right-1.5 ${getScoreBadgeColor(review.final_score)} text-white text-xs font-bold px-1.5 py-0.5 rounded-md shadow-lg group-hover:opacity-0 transition-opacity duration-200`}>
+                  {review.final_score.toFixed(1)}
+                </div>
 
                 {/* Hover overlay */}
                 <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-1 p-1">

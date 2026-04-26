@@ -1,4 +1,3 @@
-import { createClient } from '../../lib/supabase-server'
 import { createAdminClient } from '../../lib/supabase-admin'
 import ReviewsCarousel from './ReviewsCarousel'
 
@@ -7,7 +6,7 @@ const IMAGE_BASE = 'https://image.tmdb.org/t/p/w500'
 export const revalidate = 60
 
 export default async function ReviewsSection() {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data: reviews } = await supabase
     .from('reviews')

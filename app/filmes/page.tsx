@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { useAuth } from '../../lib/auth-context'
 import { useSupabase } from '../../lib/supabase-provider'
 import Footer from '../components/Footer'
+import LiquidButton from '../components/LiquidButton'
+import { useDragScroll } from '../hooks/useDragScroll'
 
 interface FilmeItem {
   tmdb_id: number
@@ -128,10 +130,9 @@ export default function FilmesPage() {
 
   const [userReviewedIds, setUserReviewedIds] = useState<Set<number>>(new Set())
 
-  const sentinelRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const loadMoreRef = useRef<() => void>(() => {})
-  const genreScrollRef = useRef<HTMLDivElement>(null)
+  const { ref: genreScrollRef, onPointerDown: genrePD, onPointerMove: genrePM, onPointerUp: genrePU, onClickCapture: genreCC } = useDragScroll<HTMLDivElement>()
 
   function scrollGenres(dir: 'left' | 'right') {
     genreScrollRef.current?.scrollBy({ left: dir === 'left' ? -200 : 200, behavior: 'smooth' })
@@ -213,16 +214,6 @@ export default function FilmesPage() {
     loadMovies(debouncedQuery, activeGenre, sortMode, pageRef.current + 1, true)
   }
 
-  useEffect(() => {
-    const sentinel = sentinelRef.current
-    if (!sentinel) return
-    const observer = new IntersectionObserver(
-      (entries) => { if (entries[0].isIntersecting) loadMoreRef.current() },
-      { threshold: 0.1 },
-    )
-    observer.observe(sentinel)
-    return () => observer.disconnect()
-  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg-dark via-bg-mid to-bg-dark flex flex-col">
@@ -255,7 +246,15 @@ export default function FilmesPage() {
                 <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
               </svg>
             </button>
-            <div ref={genreScrollRef} className="flex gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+            <div
+              ref={genreScrollRef}
+              className="flex gap-2 overflow-x-auto"
+              style={{ scrollbarWidth: 'none', cursor: 'grab' }}
+              onPointerDown={genrePD}
+              onPointerMove={genrePM}
+              onPointerUp={genrePU}
+              onClickCapture={genreCC}
+            >
               {genres.map(g => (
                 <button
                   key={g.id}
@@ -345,13 +344,16 @@ export default function FilmesPage() {
           </div>
         )}
 
-        {/* Sentinel */}
-        <div ref={sentinelRef} className="h-4" />
-
-        {/* Loading more */}
-        {isLoadingMore && (
+        {/* Load more */}
+        {!isLoading && hasMore && (
           <div className="flex justify-center py-6">
-            <div className="w-6 h-6 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
+            {isLoadingMore ? (
+              <div className="w-6 h-6 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <LiquidButton variant="purple" onClick={() => loadMoreRef.current()}>
+                Mostrar mais
+              </LiquidButton>
+            )}
           </div>
         )}
 
