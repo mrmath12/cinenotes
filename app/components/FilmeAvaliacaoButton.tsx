@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import NovaAvaliacaoModal from './NovaAvaliacaoModal'
+import LiquidButton from './LiquidButton'
 
 interface Props {
   tmdbId: number
@@ -23,23 +23,17 @@ export default function FilmeAvaliacaoButton({ tmdbId, isLoggedIn, userHasReview
 
   if (!isLoggedIn) {
     return (
-      <Link
-        href="/login"
-        className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold rounded-xl transition-colors"
-      >
-        Entre para Avaliar
-      </Link>
+      <div className="w-full md:w-auto">
+        <LiquidButton variant="gray" href="/login" size="lg" fullWidth>Entre para Avaliar</LiquidButton>
+      </div>
     )
   }
 
   return (
     <>
-      <button
-        onClick={() => setModalOpen(true)}
-        className="block w-full md:w-auto md:inline-block text-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors shadow-lg cursor-pointer"
-      >
-        Avaliar este Filme
-      </button>
+      <div className="w-full md:w-auto">
+        <LiquidButton variant="purple" size="lg" fullWidth onClick={() => setModalOpen(true)}>Avaliar este Filme</LiquidButton>
+      </div>
       <NovaAvaliacaoModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

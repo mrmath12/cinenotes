@@ -7,6 +7,7 @@ import { useSupabase } from '../../lib/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import Avatar from './Avatar'
+import LiquidButton from './LiquidButton'
 
 interface Profile {
   full_name: string
@@ -105,6 +106,9 @@ export default function Header() {
           <div className="hidden md:flex items-center space-x-6">
             {user ? (
               <>
+                <Link href="/" className="text-muted-300 hover:text-white transition-colors">
+                  Home
+                </Link>
                 <Link href="/dashboard" className="text-muted-300 hover:text-white transition-colors">
                   Dashboard
                 </Link>
@@ -128,36 +132,38 @@ export default function Header() {
 
                   {dropdownOpen && (
                     <div className="absolute right-0 mt-2 w-52 p-[1px] rounded-xl bg-gradient-to-br from-white/30 via-white/5 to-white/15 shadow-xl z-50">
-                    <div className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-xl py-1 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]">
-                      
-                      <Link
-                        href="/perfil"
-                        className="block px-4 py-2 text-sm text-muted-300 hover:text-white hover:bg-white/5 transition-colors"
-                        onClick={() => setDropdownOpen(false)}
-                      >
-                        Meu Perfil
-                      </Link>
-                      <Link
-                        href="/minhas-avaliacoes"
-                        className="block px-4 py-2 text-sm text-muted-300 hover:text-white hover:bg-white/5 transition-colors"
-                        onClick={() => setDropdownOpen(false)}
-                      >
-                        Minhas Avaliações
-                      </Link>
-                      <hr className="my-1 border-white/10" />
-                      <button
-                        onClick={handleSignOut}
-                        className="w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors"
-                      >
-                        Sair
-                      </button>
-                    </div>
+                      <div className="bg-dropdown-bg backdrop-blur-3xl backdrop-saturate-150 rounded-xl py-1 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]">
+                        <Link
+                          href="/perfil"
+                          className="block px-4 py-2 text-sm text-dropdown-text hover:text-white hover:bg-white/5 transition-colors"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          Meu Perfil
+                        </Link>
+                        <Link
+                          href="/minhas-avaliacoes"
+                          className="block px-4 py-2 text-sm text-dropdown-text hover:text-white hover:bg-white/5 transition-colors"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          Minhas Avaliações
+                        </Link>
+                        <hr className="my-1 border-white/10" />
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors"
+                        >
+                          Sair
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
               </>
             ) : (
               <>
+                <Link href="/" className="text-muted-300 hover:text-white transition-colors">
+                  Home
+                </Link>
                 <Link href="/filmes" className="text-muted-300 hover:text-white transition-colors">
                   Filmes
                 </Link>
@@ -170,11 +176,7 @@ export default function Header() {
                 >
                   Criar conta
                 </Link>
-                <div className="p-[1px] rounded-lg bg-gradient-to-br from-accent-400/60 via-accent-500/10 to-accent-500/30">
-                  <Link href="/login" className="block bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-accent-400 px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent-500/20 hover:text-accent-300 transition-all hover:scale-105 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]">
-                    Entrar
-                  </Link>
-                </div>
+                <LiquidButton variant="green" href="/login">Entrar</LiquidButton>
               </>
             )}
           </div>
@@ -242,6 +244,9 @@ export default function Header() {
                 </Link>
 
                 <nav className="flex flex-col space-y-1 flex-1">
+                  <Link href="/" onClick={closeMobile} className="text-muted-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-colors">
+                    Home
+                  </Link>
                   <Link href="/dashboard" onClick={closeMobile} className="text-muted-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-colors">
                     Dashboard
                   </Link>
@@ -266,6 +271,9 @@ export default function Header() {
             ) : (
               <>
                 <nav className="flex flex-col space-y-1 flex-1">
+                  <Link href="/" onClick={closeMobile} className="text-muted-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-colors">
+                    Home
+                  </Link>
                   <Link href="/filmes" onClick={closeMobile} className="text-muted-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-colors">
                     Filmes
                   </Link>

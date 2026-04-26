@@ -7,6 +7,7 @@ import { censorUsername } from '../../lib/utils'
 import { useAuth } from '../../lib/auth-context'
 import ReviewModal from './ReviewModal'
 import NovaAvaliacaoModal from './NovaAvaliacaoModal'
+import LiquidButton from './LiquidButton'
 
 const PAGE_SIZE = 10
 
@@ -133,12 +134,7 @@ export default function CommunityFeed() {
           <p className="text-primary-200 mb-4">
             Nenhuma avaliação ainda. Seja o primeiro a avaliar um filme!
           </p>
-          <button
-            onClick={() => setAvaliacaoModalOpen(true)}
-            className="inline-block bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg transition cursor-pointer"
-          >
-            Nova Avaliação
-          </button>
+          <LiquidButton variant="purple" onClick={() => setAvaliacaoModalOpen(true)}>Nova Avaliação</LiquidButton>
         </div>
       )}
 

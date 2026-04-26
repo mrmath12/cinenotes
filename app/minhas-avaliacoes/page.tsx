@@ -8,6 +8,7 @@ import { createSupabaseBrowserClient } from '../../lib/supabase'
 import { deleteReview } from '../../lib/actions'
 import ReviewModal from '../components/ReviewModal'
 import NovaAvaliacaoModal from '../components/NovaAvaliacaoModal'
+import NovaAvaliacaoButton from '../components/NovaAvaliacaoButton'
 import Footer from '../components/Footer'
 
 type MyReview = {
@@ -155,14 +156,7 @@ export default function MinhasAvaliacoesPage() {
                   </button>
                 </div>
               </div>
-              <div className="p-[1px] rounded-lg bg-gradient-to-br from-primary-400/60 via-primary-500/10 to-primary-500/30">
-                <button
-                  onClick={() => setAvaliacaoModalOpen(true)}
-                  className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-primary-300 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:bg-primary-500/20 hover:text-primary-200 hover:scale-105 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]"
-                >
-                  + Nova Avaliação
-                </button>
-              </div>
+              <NovaAvaliacaoButton onClick={() => setAvaliacaoModalOpen(true)} />
             </div>
 
             {/* Review list */}

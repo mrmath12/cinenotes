@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useAuth } from '../../lib/auth-context'
 import { createSupabaseBrowserClient } from '../../lib/supabase'
+import LiquidButton from './LiquidButton'
 
 interface TMDBMovie {
   tmdb_id: number
@@ -398,18 +399,10 @@ export default function NovaAvaliacaoForm({ preselectedTmdbId, onSuccess }: { pr
       </div>
 
       {/* Submit */}
-      <div className={`p-[1px] rounded-lg bg-gradient-to-br from-primary-400/60 via-primary-500/10 to-primary-500/30 ${(!isFormValid || submitting) ? 'opacity-50' : ''}`}>
-        <button
-          type="submit"
-          disabled={!isFormValid || submitting}
-          className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-primary-300 font-semibold py-3 rounded-lg transition hover:bg-primary-500/20 hover:text-primary-200 disabled:cursor-not-allowed shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] flex items-center justify-center gap-2"
-        >
-          {submitting && (
-            <div className="w-4 h-4 border-2 border-primary-300 border-t-transparent rounded-full animate-spin" />
-          )}
-          {submitting ? 'Salvando...' : 'Salvar Avaliação'}
-        </button>
-      </div>
+      <LiquidButton variant="purple" type="submit" disabled={!isFormValid || submitting} fullWidth>
+        {submitting && <div className="w-4 h-4 border-2 border-primary-300 border-t-transparent rounded-full animate-spin" />}
+        {submitting ? 'Salvando...' : 'Salvar Avaliação'}
+      </LiquidButton>
     </form>
     </div>
   )
