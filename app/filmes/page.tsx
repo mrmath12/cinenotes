@@ -132,7 +132,7 @@ export default function FilmesPage() {
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const loadMoreRef = useRef<() => void>(() => {})
-  const { ref: genreScrollRef, onPointerDown: genrePD, onPointerMove: genrePM, onPointerUp: genrePU, onClickCapture: genreCC } = useDragScroll<HTMLDivElement>()
+  const { ref: genreScrollRef, onPointerDown: genrePD, onClickCapture: genreCC } = useDragScroll<HTMLDivElement>()
 
   function scrollGenres(dir: 'left' | 'right') {
     genreScrollRef.current?.scrollBy({ left: dir === 'left' ? -200 : 200, behavior: 'smooth' })
@@ -251,8 +251,6 @@ export default function FilmesPage() {
               className="flex gap-2 overflow-x-auto"
               style={{ scrollbarWidth: 'none', cursor: 'grab' }}
               onPointerDown={genrePD}
-              onPointerMove={genrePM}
-              onPointerUp={genrePU}
               onClickCapture={genreCC}
             >
               {genres.map(g => (

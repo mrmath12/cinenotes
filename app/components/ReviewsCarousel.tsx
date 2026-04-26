@@ -71,7 +71,7 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
   const [selectedReview, setSelectedReview] = useState<CarouselReview | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const { user } = useAuth()
-  const { ref: scrollRef, onPointerDown, onPointerMove, onPointerUp, onClickCapture } = useDragScroll<HTMLDivElement>()
+  const { ref: scrollRef, onPointerDown, onClickCapture } = useDragScroll<HTMLDivElement>()
 
   const total = reviews.length
   // Max index actually reachable by scrolling — depends on how many cards are visible at once
@@ -209,8 +209,6 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
         className="flex gap-4 overflow-x-auto"
         style={{ scrollbarWidth: 'none', scrollSnapType: 'x mandatory', cursor: 'grab' }}
         onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
         onClickCapture={onClickCapture}
       >
         {reviews.map(review => (
