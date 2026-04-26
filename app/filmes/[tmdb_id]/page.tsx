@@ -6,6 +6,7 @@ import Footer from '../../components/Footer'
 import BackdropImage from '../../components/BackdropImage'
 import FilmeReviewsGrid from '../../components/FilmeReviewsGrid'
 import FilmeAvaliacaoButton from '../../components/FilmeAvaliacaoButton'
+import DragScrollContainer from '../../components/DragScrollContainer'
 
 interface CastMember {
   id: number
@@ -571,7 +572,7 @@ export default async function FilmeDetailPage({
           {movie.trailers.length > 0 && (
             <section className="mb-8">
               <h2 className="text-white font-semibold text-lg mb-3">Trailers</h2>
-              <div className="flex gap-3 overflow-x-auto pb-2">
+              <DragScrollContainer className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
                 {movie.trailers.map(trailer => (
                   <a
                     key={trailer.key}
@@ -605,7 +606,7 @@ export default async function FilmeDetailPage({
                     </div>
                   </a>
                 ))}
-              </div>
+              </DragScrollContainer>
             </section>
           )}
 

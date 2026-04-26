@@ -18,5 +18,11 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json(data.genres);
+  const NAME_MAP: Record<string, string> = {
+    Thriller: 'Suspense',
+  }
+
+  return NextResponse.json(
+    data.genres.map(g => ({ ...g, name: NAME_MAP[g.name] ?? g.name }))
+  );
 }
