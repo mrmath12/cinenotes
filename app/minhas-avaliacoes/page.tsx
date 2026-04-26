@@ -10,6 +10,8 @@ import ReviewModal from '../components/ReviewModal'
 import NovaAvaliacaoModal from '../components/NovaAvaliacaoModal'
 import NovaAvaliacaoButton from '../components/NovaAvaliacaoButton'
 import Footer from '../components/Footer'
+import ForYouSection from '../dashboard/ForYouSection'
+import type { DashboardReview } from '../dashboard/page'
 
 type MyReview = {
   id: string
@@ -59,6 +61,8 @@ function sortReviews(reviews: MyReview[], mode: SortMode): MyReview[] {
 export default function MinhasAvaliacoesPage() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
+
+  const [dashReviews, setDashReviews] = useState<DashboardReview[]>([])
 
   const [reviews, setReviews] = useState<MyReview[]>([])
   const [sortMode, setSortMode] = useState<SortMode>('date_desc')
@@ -160,7 +164,7 @@ export default function MinhasAvaliacoesPage() {
             </div>
 
             {/* Review list */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
               {sorted.map((review) => (
               <div key={review.id} className="p-[1px] rounded-2xl bg-gradient-to-br from-white/30 via-white/5 to-white/15 hover:scale-[1.01] transition-all">
                 <button
@@ -221,9 +225,11 @@ export default function MinhasAvaliacoesPage() {
                 </button>
               </div>
               ))}
+
             </div>
           </>
         )}
+        <ForYouSection userId={user.id} userReviews={dashReviews} />
       </main>
 
       <Footer />
