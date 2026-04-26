@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import LiquidButton from './LiquidButton'
 
 interface Person {
   id: number
@@ -210,14 +211,7 @@ export default function LuckyModal() {
 
   return (
     <>
-      <div className="p-[1px] rounded-lg bg-gradient-to-br from-accent-400/60 via-accent-500/10 to-accent-500/30">
-        <button
-          onClick={() => setIsOpen(true)}
-          className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-accent-400 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-accent-500/20 hover:text-accent-300 transition-all transform hover:scale-105 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]"
-        >
-          Estou com Sorte
-        </button>
-      </div>
+      <LiquidButton variant="green" size="lg" onClick={() => setIsOpen(true)}>Estou com Sorte</LiquidButton>
 
       {isOpen && (
         <div
@@ -350,25 +344,17 @@ export default function LuckyModal() {
 
             {/* Footer */}
             <div className="flex gap-3 mt-6">
-              <button
-                type="button"
-                onClick={handleClearFilters}
-                disabled={loading}
-                className="flex-1 bg-white/5 border border-white/15 text-muted-300 hover:text-white hover:bg-white/10 px-4 py-3 rounded-xl text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Limpar filtros
-              </button>
-              <button
-                type="button"
-                onClick={handleSortear}
-                disabled={loading}
-                className="flex-1 bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white px-4 py-3 rounded-xl text-sm font-semibold transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {loading && (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                )}
-                {loading ? 'Sorteando...' : 'Sortear!'}
-              </button>
+              <div className="flex-1">
+                <LiquidButton variant="gray" onClick={handleClearFilters} disabled={loading} fullWidth>
+                  Limpar filtros
+                </LiquidButton>
+              </div>
+              <div className="flex-1">
+                <LiquidButton variant="purple" onClick={handleSortear} disabled={loading} fullWidth>
+                  {loading && <div className="w-4 h-4 border-2 border-primary-300 border-t-transparent rounded-full animate-spin" />}
+                  {loading ? 'Sorteando...' : 'Sortear!'}
+                </LiquidButton>
+              </div>
             </div>
           </div>
         </div>

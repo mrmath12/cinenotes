@@ -285,26 +285,30 @@ export default function FilmesPage() {
         {/* Sort tabs */}
         {searchInput.length < 2 && (
           <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setSortMode('popular')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                sortMode === 'popular'
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-white/5 text-muted-300 border border-white/15 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              Populares
-            </button>
-            <button
-              onClick={() => setSortMode('top_rated')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                sortMode === 'top_rated'
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-white/5 text-muted-300 border border-white/15 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              Mais Bem Avaliados
-            </button>
+            <div className={`p-[1px] rounded-lg bg-gradient-to-br ${sortMode === 'popular' ? 'from-primary-400/60 via-primary-500/10 to-primary-500/30' : 'from-white/30 via-white/5 to-white/15'}`}>
+              <button
+                onClick={() => setSortMode('popular')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all backdrop-blur-xl backdrop-saturate-150 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] ${
+                  sortMode === 'popular'
+                    ? 'bg-white/10 text-primary-200 hover:bg-primary-500/20'
+                    : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
+                }`}
+              >
+                Populares
+              </button>
+            </div>
+            <div className={`p-[1px] rounded-lg bg-gradient-to-br ${sortMode === 'top_rated' ? 'from-primary-400/60 via-primary-500/10 to-primary-500/30' : 'from-white/30 via-white/5 to-white/15'}`}>
+              <button
+                onClick={() => setSortMode('top_rated')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all backdrop-blur-xl backdrop-saturate-150 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] ${
+                  sortMode === 'top_rated'
+                    ? 'bg-white/10 text-primary-200 hover:bg-primary-500/20'
+                    : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
+                }`}
+              >
+                Mais Bem Avaliados
+              </button>
+            </div>
           </div>
         )}
 

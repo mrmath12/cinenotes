@@ -41,6 +41,8 @@
 
   /* === Superfície de componentes (cards, drawers, dropdowns) === */
   --color-surface: #112226;
+  --color-dropdown-bg: #0a1a1d;
+  --color-dropdown-text: #9ca3af;
 
   /* === Componentes especiais === */
   --color-star: #facc15;

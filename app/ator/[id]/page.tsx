@@ -23,16 +23,44 @@ async function fetchPersonDetail(id: string): Promise<PersonDetail | null> {
   const apiKey = process.env.TMDB_API_KEY
   try {
     const res = await fetch(
-      `https://api.themoviedb.org/3/person/${id}?api_key=${apiKey}&language=pt-BR&append_to_response=tagged_images`,
+      `https://api.themoviedb.org/3/person/${id}?api_key=${apiKey}&language=pt-BR&append_to_response=tagged_images,movie_credits`,
       { next: { revalidate: 3600 } },
     )
     if (!res.ok) return null
     const data = await res.json()
 
-    const backdropUrls: string[] = (data.tagged_images?.results ?? [])
+    let backdropUrls: string[] = (data.tagged_images?.results ?? [])
       .filter((img: { image_type: string }) => img.image_type === 'backdrop')
       .slice(0, 5)
       .map((img: { file_path: string }) => `https://image.tmdb.org/t/p/w1280${img.file_path}`)
+
+    if (backdropUrls.length === 0) {
+      const allCredits: { id: number; popularity: number }[] = [
+        ...(data.movie_credits?.cast ?? []),
+        ...(data.movie_credits?.crew ?? []),
+      ]
+      const seen = new Set<number>()
+      const topIds: number[] = []
+      allCredits
+        .sort((a, b) => b.popularity - a.popularity)
+        .forEach(c => {
+          if (!seen.has(c.id) && topIds.length < 3) {
+            seen.add(c.id)
+            topIds.push(c.id)
+          }
+        })
+      const details = await Promise.all(
+        topIds.map(mid =>
+          fetch(`https://api.themoviedb.org/3/movie/${mid}?api_key=${apiKey}`, {
+            next: { revalidate: 86400 },
+          }).then(r => (r.ok ? r.json() : null)),
+        ),
+      )
+      backdropUrls = details
+        .filter(Boolean)
+        .filter((m: { backdrop_path: string | null }) => m.backdrop_path)
+        .map((m: { backdrop_path: string }) => `https://image.tmdb.org/t/p/w1280${m.backdrop_path}`)
+    }
 
     return {
       id: data.id,

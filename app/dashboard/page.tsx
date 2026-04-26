@@ -9,6 +9,7 @@ import { createSupabaseBrowserClient } from '../../lib/supabase'
 import UserStats from './UserStats'
 import ForYouSection from './ForYouSection'
 import NovaAvaliacaoModal from '../components/NovaAvaliacaoModal'
+import LiquidButton from '../components/LiquidButton'
 
 export type DashboardReview = {
   id: string
@@ -94,22 +95,8 @@ export default function DashboardPage() {
             reviews={reviews}
             headerActions={
               <div className="flex gap-3 flex-shrink-0">
-                <div className="p-[1px] rounded-lg bg-gradient-to-br from-accent-400/60 via-accent-500/10 to-accent-500/30">
-                  <button
-                    onClick={() => setAvaliacaoModalOpen(true)}
-                    className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-accent-400 px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent-500/20 hover:text-accent-300 transition-all hover:scale-105 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]"
-                  >
-                    + Nova Avaliação
-                  </button>
-                </div>
-                <div className="p-[1px] rounded-lg bg-gradient-to-br from-primary-400/60 via-primary-500/10 to-primary-500/30">
-                  <Link
-                    href="/minhas-avaliacoes"
-                    className="block bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-primary-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-500/20 hover:text-primary-200 transition-all hover:scale-105 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]"
-                  >
-                    Minhas Avaliações
-                  </Link>
-                </div>
+                <LiquidButton variant="green" onClick={() => setAvaliacaoModalOpen(true)}>+ Nova Avaliação</LiquidButton>
+                <LiquidButton variant="gray" href="/minhas-avaliacoes">Minhas Avaliações</LiquidButton>
               </div>
             }
           />

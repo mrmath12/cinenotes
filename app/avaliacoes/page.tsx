@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { toast } from 'sonner'
 import { useAuth } from '../../lib/auth-context'
 import { deleteReview, fetchPublicReviews } from '../../lib/actions'
@@ -10,6 +9,7 @@ import Avatar from '../components/Avatar'
 import Footer from '../components/Footer'
 import ReviewModal from '../components/ReviewModal'
 import NovaAvaliacaoModal from '../components/NovaAvaliacaoModal'
+import LiquidButton from '../components/LiquidButton'
 
 interface ReviewWithMovie {
   id: string
@@ -150,12 +150,9 @@ export default function AvaliacoesPage() {
           <div className="text-center py-20">
             <p className="text-muted-300 text-lg mb-6">Nenhuma avaliação ainda.</p>
             {user && (
-              <button
-                onClick={() => setAvaliacaoModalOpen(true)}
-                className="inline-block bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-3 rounded-xl hover:from-primary-600 hover:to-accent-600 transition-all font-medium cursor-pointer"
-              >
+              <LiquidButton variant="purple" size="lg" onClick={() => setAvaliacaoModalOpen(true)}>
                 Seja o primeiro a avaliar
-              </button>
+              </LiquidButton>
             )}
           </div>
         ) : (
@@ -163,40 +160,34 @@ export default function AvaliacoesPage() {
             {/* Sort controls + action buttons */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex gap-3">
-                <button
-                  onClick={() => setSortMode((prev) => (prev === 'date_desc' ? 'date_asc' : 'date_desc'))}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    sortMode === 'date_desc' || sortMode === 'date_asc'
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
-                  }`}
-                >
-                  Por Data {sortMode === 'date_desc' ? '↓' : sortMode === 'date_asc' ? '↑' : ''}
-                </button>
-                <button
-                  onClick={() => setSortMode((prev) => (prev === 'score_desc' ? 'score_asc' : 'score_desc'))}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    sortMode === 'score_desc' || sortMode === 'score_asc'
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
-                  }`}
-                >
-                  Por Nota {sortMode === 'score_desc' ? '↓' : sortMode === 'score_asc' ? '↑' : ''}
-                </button>
+                <div className={`p-[1px] rounded-lg bg-gradient-to-br ${sortMode === 'date_desc' || sortMode === 'date_asc' ? 'from-primary-400/60 via-primary-500/10 to-primary-500/30' : 'from-white/30 via-white/5 to-white/15'}`}>
+                  <button
+                    onClick={() => setSortMode((prev) => (prev === 'date_desc' ? 'date_asc' : 'date_desc'))}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all backdrop-blur-xl backdrop-saturate-150 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] ${
+                      sortMode === 'date_desc' || sortMode === 'date_asc'
+                        ? 'bg-white/10 text-primary-200 hover:bg-primary-500/20'
+                        : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
+                    }`}
+                  >
+                    Por Data {sortMode === 'date_desc' ? '↓' : sortMode === 'date_asc' ? '↑' : ''}
+                  </button>
+                </div>
+                <div className={`p-[1px] rounded-lg bg-gradient-to-br ${sortMode === 'score_desc' || sortMode === 'score_asc' ? 'from-primary-400/60 via-primary-500/10 to-primary-500/30' : 'from-white/30 via-white/5 to-white/15'}`}>
+                  <button
+                    onClick={() => setSortMode((prev) => (prev === 'score_desc' ? 'score_asc' : 'score_desc'))}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all backdrop-blur-xl backdrop-saturate-150 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] ${
+                      sortMode === 'score_desc' || sortMode === 'score_asc'
+                        ? 'bg-white/10 text-primary-200 hover:bg-primary-500/20'
+                        : 'bg-white/10 text-muted-300 hover:text-white hover:bg-white/15'
+                    }`}
+                  >
+                    Por Nota {sortMode === 'score_desc' ? '↓' : sortMode === 'score_asc' ? '↑' : ''}
+                  </button>
+                </div>
               </div>
               <div className="flex gap-3">
-                <button
-                  onClick={() => setAvaliacaoModalOpen(true)}
-                  className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer"
-                >
-                  + Nova Avaliação
-                </button>
-                <Link
-                  href="/minhas-avaliacoes"
-                  className="bg-white/10 hover:bg-white/15 text-white px-4 py-2 rounded-lg text-sm font-medium transition border border-white/20"
-                >
-                  Minhas Avaliações
-                </Link>
+                <LiquidButton variant="green" onClick={() => setAvaliacaoModalOpen(true)}>+ Nova Avaliação</LiquidButton>
+                <LiquidButton variant="gray" href="/minhas-avaliacoes">Minhas Avaliações</LiquidButton>
               </div>
             </div>
 

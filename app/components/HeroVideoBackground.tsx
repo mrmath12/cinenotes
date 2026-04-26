@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import LuckyModal from './LuckyModal'
+import LiquidButton from './LiquidButton'
 
 interface HeroMovie {
   trailerKey: string
@@ -74,7 +75,7 @@ export default function HeroVideoBackground({ movies, ctaHref }: HeroVideoBackgr
 
       {/* Content */}
       <div className="relative z-10 w-full container mx-auto px-4 max-w-7xl py-24 text-center">
-        <h1 className="text-3xl md:text-5xl xl:text-6xl font-bold text-white mb-6 max-w-7xl mx-auto">
+        <h1 className="text-3xl md:text-5xl xl:text-6xl font-bold text-white mb-6 max-w-7xl mx-auto text-shadow-lg/20">
           Sua opinião merece mais do que
           <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent"> uma nota</span>
         </h1>
@@ -84,22 +85,8 @@ export default function HeroVideoBackground({ movies, ctaHref }: HeroVideoBackgr
         </p>
         <div className="flex flex-col gap-4 items-center">
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <div className="p-[1px] rounded-lg bg-gradient-to-br from-primary-400/60 via-primary-500/10 to-primary-500/30">
-              <Link
-                href="/filmes"
-                className="flex items-center justify-center bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-primary-300 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-500/20 hover:text-primary-200 transition-all hover:scale-105 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]"
-              >
-                Explorar Filmes
-              </Link>
-            </div>
-            <div className="p-[1px] rounded-lg bg-gradient-to-br from-primary-400/60 via-primary-500/10 to-primary-500/30">
-              <Link
-                href={ctaHref}
-                className="flex items-center justify-center bg-white/10 backdrop-blur-xl backdrop-saturate-150 text-primary-300 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-500/20 hover:text-primary-200 transition-all hover:scale-105 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]"
-              >
-                Começar Agora
-              </Link>
-            </div>
+            <LiquidButton variant="purple" size="lg" href="/filmes">Explorar Filmes</LiquidButton>
+            <LiquidButton variant="purple" size="lg" href={ctaHref}>Começar Agora</LiquidButton>
           </div>
           <LuckyModal />
         </div>
