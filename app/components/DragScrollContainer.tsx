@@ -9,7 +9,7 @@ interface DragScrollContainerProps {
 }
 
 export default function DragScrollContainer({ children, className, style }: DragScrollContainerProps) {
-  const { ref, onPointerDown, onPointerMove, onPointerUp, onClickCapture } = useDragScroll<HTMLDivElement>()
+  const { ref, onPointerDown, onClickCapture } = useDragScroll<HTMLDivElement>()
 
   return (
     <div
@@ -17,8 +17,6 @@ export default function DragScrollContainer({ children, className, style }: Drag
       className={className}
       style={{ cursor: 'grab', ...style }}
       onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
       onClickCapture={onClickCapture}
     >
       {children}
