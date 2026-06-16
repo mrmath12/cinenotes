@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
 
   let first: TMDBDiscoverResponse
   try {
-    const res = await fetch(buildUrl(1), { cache: 'no-store' })
+    const res = await fetch(buildUrl(1), { next: { revalidate: 120 } })
     if (!res.ok) throw new Error(`TMDB ${res.status}`)
     first = await res.json()
   } catch {
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     results = first.results
   } else {
     try {
-      const res = await fetch(buildUrl(randomPage), { cache: 'no-store' })
+      const res = await fetch(buildUrl(randomPage), { next: { revalidate: 120 } })
       if (!res.ok) throw new Error(`TMDB ${res.status}`)
       const data: TMDBDiscoverResponse = await res.json()
       results = data.results

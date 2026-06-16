@@ -2,7 +2,42 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+// Rate limit in-memory por instância de edge: protege rotas caras
+// (chamadas ao TMDB) contra abuso de bots/scrapers de um mesmo IP.
+// Não é distribuído entre instâncias/regiões, mas não exige infra externa.
+const RATE_LIMIT_WINDOW_MS = 60_000
+const RATE_LIMIT_MAX_REQUESTS = 30
+const rateLimitMap = new Map<string, { count: number; windowStart: number }>()
+
+const RATE_LIMITED_PREFIXES = ['/api/tmdb/', '/filmes/', '/ator/', '/diretor/']
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimitMap.get(ip)
+
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitMap.set(ip, { count: 1, windowStart: now })
+    return false
+  }
+
+  entry.count += 1
+  return entry.count > RATE_LIMIT_MAX_REQUESTS
+}
+
 export async function middleware(req: NextRequest) {
+  const pathname = req.nextUrl.pathname
+  const isRateLimitedRoute = RATE_LIMITED_PREFIXES.some(prefix => pathname.startsWith(prefix))
+
+  if (isRateLimitedRoute) {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown'
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: 'Muitas requisições. Tente novamente em breve.' },
+        { status: 429 },
+      )
+    }
+  }
+
   let response = NextResponse.next({
     request: {
       headers: req.headers,
