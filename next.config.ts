@@ -37,6 +37,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['192.168.1.4'],
   images: {
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       {
         protocol: 'https',

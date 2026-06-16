@@ -22,18 +22,14 @@ export default function BackdropImage({ urls, alt }: BackdropImageProps) {
   if (!urls[0]) return null
 
   return (
-    <>
-      {urls.map((url, i) => (
-        <Image
-          key={url}
-          src={url}
-          alt={alt}
-          fill
-          className={`object-cover transition-opacity duration-1000 ${i === index ? 'opacity-100' : 'opacity-0'}`}
-          sizes="100vw"
-          priority={i === 0}
-        />
-      ))}
-    </>
+    <Image
+      key={urls[index]}
+      src={urls[index]}
+      alt={alt}
+      fill
+      className="object-cover transition-opacity duration-1000"
+      sizes="100vw"
+      priority={index === 0}
+    />
   )
 }
